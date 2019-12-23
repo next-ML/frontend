@@ -7,17 +7,23 @@
     <div class="block"><el-avatar :size="32" :src="profileUrl"></el-avatar></div>
   </el-col>
   <el-col :span="2" style="position: relative; top: -3px;">
-    guest
+    {{ userId }}
   </el-col>
 </el-row>
 </template>
 
 <script>
+
 export default {
-   name: "headTop",
+   name: "HeadTop",
    data() {
      return {
        "profileUrl": require("~/assets/profile.png")
+     }
+   },
+   computed: {
+     userId() {
+       return this.$store.state.userId
      }
    }
 }

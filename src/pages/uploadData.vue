@@ -1,7 +1,7 @@
 <template>
 <div class="fillcontain" style="padding-top: 40px; box-sizing: border-box;">
   <uploader class="uploader-example"
-            :options="options"
+            :options="uploaderOptions"
             @complete="onUploadComplete"
             ref="uploader" >
     <uploader-unsupport></uploader-unsupport>
@@ -15,14 +15,13 @@
 </template>
 
 <script>
-
+import axios from 'axios'
 export default {
 	name: "UploadData",
 	data() {
     return {
-      options: {
-        target: ["api", "guest", "dataset"]
-                .join("/"),
+      uploaderOptions: {
+        target: this.apiTarget,
         testChunks: false
       },
       attrs: {
@@ -30,9 +29,15 @@ export default {
       }
     }
 	},
+	computed: {
+	},
 	methods: {
 		onUploadComplete() {
-			alert("上传成功！")
+			alert("上传完成");
+		},
+		apiTarget(file) {
+			return ["api", "guest", "dataset", file.name]
+						 .join("/");
 		}
 	}
 }

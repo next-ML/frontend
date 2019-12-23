@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="fillcontain">
   <el-card shadow="never">
     <chart style="width: 100%; height:360px;" :options="chartOptions"></chart>
   </el-card>
