@@ -1,9 +1,10 @@
 import Vue from "vue"
 import Vuex from "vuex"
+import axios from 'axios'
 
 Vue.use(Vuex);
 
-const state = {
+let state = {
   // 用户id
   userId: "guest",
   // 用户所有的数据集的信息
@@ -39,7 +40,7 @@ const state = {
     ],
     // 当前的已加载的数据
     metadata: {
-      name: "iris.csv",
+      name: "example.csv",
       columns: [
         {
           name: "日期",
@@ -94,6 +95,18 @@ const state = {
   }
 }
 
+function initDatasetInfo(state) {
+  axios
+    .get(["api", state.userId, "dataset", "meta"].join("/"))
+    .then(response => {
+      let allDataset = response.data;
+      state.allDataset = allDataset;
+    })
+    .catch(error => {
+      console.log(error);
+    })
+}
+
 function transferAttributesNameFormat(attributes) {
   let attr_list = []
   for (const attr of attributes) {
@@ -109,13 +122,29 @@ const mutations = {
   },
   setNumericAttributes(state, attributes) {
     let attr_list = transferAttributesNameFormat(attributes);
-    state.numericAttributes = attr_list;
+    state.currentDataset.numericAttributes = attr_list;
   },
+  setColumns(state, columns) {
+    state.currentDataset.metadata.columns = columns;
+  },
+  setRawData(state, rawData) {
+    state.currentDataset.rawData = rawData;
+  },
+  setDatasetName(state, name) {
+    state.currentDataset.metadata.name = name;
+  },
+  setAllDatasetInfo(state, allDataset) {
+    state.allDataset = allDataset;
+  }
 }
 
 const actions = {
 
 }
+
+
+// Initialize
+initDatasetInfo(state);
 
 export default new Vuex.Store({
   state,
