@@ -27,7 +27,7 @@
         <li class="attribute-item" 
             v-for="column in categoryAttributes" 
             :key="column.id">
-          <i class="el-icon-caret-right"></i>
+          <i class="el-icon-rank"></i>
           <span class="file-name">{{ column.name }}</span>
         </li>
       </ul>
@@ -41,7 +41,7 @@
         <li class="attribute-item"
             v-for="column in numericAttributes" 
             :key="column.id">
-          <i class="el-icon-caret-right"></i>
+          <i class="el-icon-rank"></i>
           <span class="file-name">{{ column.name }}</span>
         </li>
       </ul>
