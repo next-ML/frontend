@@ -24,12 +24,19 @@
     <div style="overflow:auto; height: calc(50% - 30px);" 
         class="infinite-list-wrapper">
       <ul class="dataset-list list">
-        <li class="attribute-item" 
-            v-for="column in categoryAttributes" 
-            :key="column.id">
-          <i class="el-icon-rank"></i>
-          <span class="file-name">{{ column.name }}</span>
-        </li>
+        <draggable
+          class="dragArea list-group"
+          :list="categoryAttributes"
+          :group="{ name: 'attributes', pull: 'clone', put: false }"
+          :clone="cloneAttribute"
+        >
+          <li class="attribute-item" 
+              v-for="column in categoryAttributes" 
+              :key="column.name">
+            <i class="el-icon-rank"></i>
+            <span class="file-name">{{ column.name }}</span>
+          </li>
+        </draggable>
       </ul>
     </div>
     <div class="sider-bar-head">
@@ -38,12 +45,19 @@
     <div style="overflow:auto; height: calc(50% - 31px);" 
         class="infinite-list-wrapper">
       <ul class="dataset-list list">
-        <li class="attribute-item"
+        <draggable
+          class="dragArea list-group"
+          :list="numericAttributes"
+          :group="{ name: 'attributes', pull: 'clone', put: false }"
+          :clone="cloneAttribute"
+        >
+          <li class="attribute-item"
             v-for="column in numericAttributes" 
-            :key="column.id">
-          <i class="el-icon-rank"></i>
-          <span class="file-name">{{ column.name }}</span>
-        </li>
+            :key="column.name">
+            <i class="el-icon-rank"></i>
+            <span class="file-name">{{ column.name }}</span>
+          </li>
+        </draggable>
       </ul>
     </div>
   </div>
@@ -51,10 +65,14 @@
 </template>
 
 <script>
+import draggable from "vuedraggable";
 import axios from 'axios';
 
 export default {
   name: "DatasetBar",
+  components: {
+    draggable
+  },
   data() {
     return {
     }
@@ -71,6 +89,11 @@ export default {
     }
   },
   methods: {
+    cloneAttribute({ name }) {
+      return {
+        name: `${name}`
+      };
+    },
     loadDataset(datasetName) {
       let store = this.$store;
       // Get dataset metadata.

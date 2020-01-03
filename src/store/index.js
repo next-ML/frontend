@@ -92,7 +92,13 @@ let state = {
         "邮编": 200333
       }
     ]
-  }
+  },
+  drawAttrRow: [
+    // {"name": "aaa"}
+  ],
+  drawAttrCol: [
+    // {"name": "bbb"}
+  ]
 }
 
 function initDatasetInfo(state) {
@@ -135,6 +141,12 @@ const mutations = {
   },
   setAllDatasetInfo(state, allDataset) {
     state.allDataset = allDataset;
+  },
+  setDrawAttrCol(state, attributes) {
+    state.drawAttrCol = attributes;
+  },
+  setDrawAttrRow(state, attributes) {
+    state.drawAttrRow = attributes;
   }
 }
 

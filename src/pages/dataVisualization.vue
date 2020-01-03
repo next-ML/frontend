@@ -1,13 +1,13 @@
 <template>
 <div class="fillcontain">
   <el-card shadow="never">
-    <chart style="width: 100%; height:360px;" :options="chartOptions"></chart>
+    <chart style="width: 100%; height:calc(100vh - 250px);" :options="chartOptions"></chart>
   </el-card>
   <el-card shadow="never" :body-style="{ padding: '5px 10px' }">
     <el-row type="flex" align="middle">
       <el-col :span="3" class="vis-type-box">
         <div style="margin: 12px 0; text-align: center;">图表类型</div>
-        <el-select v-model="charType" placeholder="请选择">
+        <el-select v-model="chartType" placeholder="请选择">
           <el-option label="分布图" value="分布图">
           </el-option>
         </el-select>
@@ -18,18 +18,40 @@
             <i class="el-icon-s-data"></i>
             <span class="row-and-col-mark">列</span>
           </span>
-          <el-tag type="info">
-            Count
-          </el-tag>
+          <draggable
+            class="attribute-drop-area dragArea list-group"
+            ghostClass="drop-ghost"
+            :list="rowAttributes"
+            group="attributes"
+            @change="drawChart"
+          >
+            <el-tag type="info" 
+                    class="attr-tag"
+                    v-for="attr in rowAttributes" 
+                    :key="attr.name">
+              {{ attr.name }}
+            </el-tag>
+          </draggable>
         </div>
         <div class="tag-group attribute-select-box">
           <span class="tag-group__title">
             <i class="el-icon-s-unfold"></i>
             <span class="row-and-col-mark">行</span>
           </span>
-          <el-tag type="info">
-            Age
-          </el-tag>
+          <draggable
+            class="attribute-drop-area dragArea list-group"
+            ghostClass="drop-ghost"
+            :list="colAttributes"
+            group="attributes"
+            @change="drawChart"
+          >
+            <el-tag type="info" 
+                    class="attr-tag"
+                    v-for="attr in colAttributes" 
+                    :key="attr.name">
+              {{ attr.name }}
+            </el-tag>
+          </draggable>
         </div>
       </el-col>
       <el-col :span="6">
@@ -43,6 +65,7 @@
 </template>
 
 <script>
+import draggable from "vuedraggable";
 import 'echarts/lib/chart/bar';
 import 'echarts/lib/component/markLine'
 import 'echarts/lib/component/legend'
@@ -51,14 +74,19 @@ import 'echarts/lib/component/markPoint'
 import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/toolbox'
 
+
 export default {
+  components: {
+    draggable
+  },
   data() {
+    let mainTitle = this.$store.state.currentDataset.metadata.name;
     return {
-      charType: "分布图",
+      chartType: "分布图",
       chartOptions: {
         title : {
-          text: 'Age分布图',
-          subtext: '用于测试'
+          text: mainTitle + this.chartType,
+          subtext: '直观展示属性间关系'
         },
         tooltip : {
           trigger: 'axis'
@@ -79,7 +107,7 @@ export default {
         xAxis : [
           {
             type : 'category',
-            data : ['0-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80']
+            data : ['a','b', 'c', 'd', 'e']
           }
         ],
         yAxis : [
@@ -121,6 +149,29 @@ export default {
             }
           }
         ]
+      },
+    }
+  },
+  methods: {
+    drawChart: function(evt) {
+      window.console.log(evt);
+    },
+  },
+  computed: {
+    rowAttributes: {
+      get() {
+        return this.$store.state.drawAttrRow;
+      },
+      set(value) {
+        this.$store.commit('setDrawAttrRow', value);
+      }
+    },
+    colAttributes: {
+      get() {
+        return this.$store.state.drawAttrCol;
+      },
+      set(value) {
+        this.$store.commit('setDrawAttrCol', value);
       }
     }
   }
@@ -135,7 +186,7 @@ export default {
   margin: 3px 10px;
   padding: 4px 10px;
   border-radius:5px;
-  -moz-border-radius:5px
+  -moz-border-radius:5px;
 }
 
 .row-and-col-mark {
@@ -158,4 +209,13 @@ export default {
   border-color: rgba(204, 203, 203, 0.9);
   border-style: solid;
 }
+
+.attribute-drop-area {
+  display: inline;
+}
+
+.attr-tag{
+  margin: 0 3px;
+}
+
 </style>
