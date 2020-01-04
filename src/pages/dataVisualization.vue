@@ -28,6 +28,8 @@
             <el-tag type="info" 
                     class="attr-tag"
                     v-for="attr in colAttributes" 
+                    closable
+                    @close="removeCol(attr.name)"
                     :key="attr.name">
               {{ attr.name }}
             </el-tag>
@@ -48,6 +50,8 @@
             <el-tag type="info" 
                     class="attr-tag"
                     v-for="attr in rowAttributes" 
+                    closable
+                    @close="removeRow(attr.name)"
                     :key="attr.name">
               {{ attr.name }}
             </el-tag>
@@ -79,6 +83,10 @@ import 'echarts/lib/component/toolbox'
 export default {
   components: {
     draggable
+  },
+  created() {
+    this.$store.commit('setDrawAttrRow', []);
+    this.$store.commit('setDrawAttrCol', []);
   },
   data() {
     return {
@@ -201,10 +209,15 @@ export default {
           seris['data'] = data.heights;
           chartOptions["series"] = [];
           chartOptions["series"].push(seris);
-          console.log(response);
           that.$refs.dataChart.mergeOptions(chartOptions, true); // Not merge, but set.
         })
     },
+    removeRow(tag) {
+      this.rowAttributes.splice(this.rowAttributes.indexOf(tag), 1);
+    },
+    removeCol(tag) {
+      this.colAttributes.splice(this.colAttributes.indexOf(tag), 1);
+    }
   },
   computed: {
     rowAttributes: {

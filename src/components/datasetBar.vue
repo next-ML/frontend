@@ -95,52 +95,10 @@ export default {
       };
     },
     loadDataset(datasetName) {
-      let store = this.$store;
-      // Get dataset metadata.
-      axios
-        .get(["api", store.state.userId, "dataset", datasetName, "meta"].join("/"))
-        .then(response => {
-          let data = response.data;
-          store.commit("setDatasetName", data.name);
-          store.commit("setColumns", data.columns);
-          let categoryAttributes = [];
-          let numericAttributes = [];
-          let columns = []
-          for (let col of data.columns) {
-            if (col.type == "category") {
-              categoryAttributes.push(col.name);
-            }
-            else {
-              numericAttributes.push(col.name);
-            }
-            columns.push(col.name);
-          }
-          store.commit("setCategoryAttributes", categoryAttributes);
-          store.commit("setNumericAttributes", numericAttributes);
-          this.loadRawData(datasetName, columns);
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      this.$store.dispatch("loadDataset", datasetName);
     },
     loadRawData(datasetName, columns) {
-      let store = this.$store;
-      // Get dataset raw data.
-      axios
-        .get(["api", store.state.userId, "dataset", datasetName].join("/"))
-        .then(response => {
-          let data = response.data;
-          let rawData = data.data;
-          let rawDataWithKey = [];
-          for (const row of rawData) {
-            let rowOjb = {};
-            for (const i in columns) {
-              rowOjb[columns[i]] = row[i];
-            }
-            rawDataWithKey.push(rowOjb);
-          }
-          store.commit("setRawData", rawDataWithKey);
-        })
+      this.$store.dispatch("loadRawData", datasetName, columns);
     }
   }
 }

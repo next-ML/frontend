@@ -9,38 +9,38 @@ let state = {
   userId: "guest",
   // 用户所有的数据集的信息
   allDataset: [
-    {
-      name:"label.csv"
-    }, 
-    {
-      name:"titanic.csv"
-    }, 
-    {
-      name:"iris.csv"
-    }, 
+    // {
+    //   name:"label.csv"
+    // }, 
+    // {
+    //   name:"titanic.csv"
+    // }, 
+    // {
+    //   name:"iris.csv"
+    // }, 
   ],
   currentDataset: {
     // 当前数据集“种类”类别
     categoryAttributes: [
-      {
-        name: "Survived", 
-      },
-      {
-        name: "Pclass",
-      },
+      // {
+      //   name: "Survived", 
+      // },
+      // {
+      //   name: "Pclass",
+      // },
     ],
     // 当前数据集“数值”类别
     numericAttributes: [
-      {
-        name: "PassengerId",
-      }, 
-      {
-        name: "Age", 
-      }
+      // {
+      //   name: "PassengerId",
+      // }, 
+      // {
+      //   name: "Age", 
+      // }
     ],
     // 当前的已加载的数据
     metadata: {
-      name: "example.csv",
+      name: "数据集名称",
       columns: [
         {
           name: "日期",
@@ -109,19 +109,8 @@ let state = {
     styleAttrs: [
       
     ]
-  }
-}
-
-function initDatasetInfo(state) {
-  axios
-    .get(["api", state.userId, "dataset", "meta"].join("/"))
-    .then(response => {
-      let allDataset = response.data;
-      state.allDataset = allDataset;
-    })
-    .catch(error => {
-      console.log(error);
-    })
+  },
+  isLoadingRawData: false,
 }
 
 function transferAttributesNameFormat(attributes) {
@@ -158,16 +147,80 @@ const mutations = {
   },
   setDrawAttrRow(state, attributes) {
     state.drawConfig.rowAttrs = attributes;
+  },
+  setLoadingDataFlag(state, flag) {
+    state.isLoadingRawData = flag;
   }
 }
 
 const actions = {
+  loadDataset(context, datasetName) {
+    // Get dataset metadata.
+    axios
+      .get(["api", context.state.userId, "dataset", datasetName, "meta"].join("/"))
+      .then(response => {
+        let data = response.data;
+        context.commit("setDatasetName", data.name);
+        context.commit("setColumns", data.columns);
+        let categoryAttributes = [];
+        let numericAttributes = [];
+        let columns = []
+        for (let col of data.columns) {
+          if (col.type == "category") {
+            categoryAttributes.push(col.name);
+          }
+          else {
+            numericAttributes.push(col.name);
+          }
+          columns.push(col.name);
+        }
+        context.commit("setCategoryAttributes", categoryAttributes);
+        context.commit("setNumericAttributes", numericAttributes);
+        context.dispatch("loadRawData", {
+          datasetName: datasetName, 
+          columns: columns
+        });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
+  loadRawData(context, {datasetName, columns}) {
+    // Get dataset raw data.
+    context.commit("setLoadingDataFlag", true);
+    axios
+      .get(["api", context.state.userId, "dataset", datasetName].join("/"))
+      .then(response => {
+        let data = response.data;
+        let rawData = data.data;
+        let rawDataWithKey = [];
+        for (const row of rawData) {
+          let rowOjb = {};
+          for (const i in columns) {
+            rowOjb[columns[i]] = row[i];
+          }
+          rawDataWithKey.push(rowOjb);
+        }
+        context.commit("setRawData", rawDataWithKey);
+        context.commit("setLoadingDataFlag", false);
+      })
+  },
+  initDatasetInfo({ state }) {
 
+    axios
+      .get(["api", state.userId, "dataset", "meta"].join("/"))
+      .then(response => {
+        let allDataset = response.data;
+        state.allDataset = allDataset;
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
 }
 
-
 // Initialize
-initDatasetInfo(state);
+actions.initDatasetInfo({state: state});
 
 export default new Vuex.Store({
   state,

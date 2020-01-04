@@ -16,16 +16,25 @@
         width="150">
       </el-table-column>
     </el-table>
+    <loading :active.sync="isLoading" 
+        :can-cancel="false" 
+        :is-full-page="fullPage"></loading>
   </el-card>
 </div>
 </template>
 
 <script>
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+
 export default {
   name: "dataOverview",
+  components: {
+    Loading
+  },
   data() {
     return {
-      
+      fullPage: false
     }
   },
   computed: {
@@ -37,6 +46,9 @@ export default {
     },
     columns() {
       return this.$store.state.currentDataset.metadata.columns;
+    },
+    isLoading() {
+      return this.$store.state.isLoadingRawData;
     }
   }
 }

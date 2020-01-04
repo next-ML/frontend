@@ -11,7 +11,6 @@ Vue.component('chart', Echarts);
 Vue.use(ElementUI);
 Vue.use(uploader);
 
-
 new Vue({
   el: '#app',
   router,

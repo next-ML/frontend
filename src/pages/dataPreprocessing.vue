@@ -1,6 +1,9 @@
 <template>
 <div>
-  预处理模块正在研发中。。。
+  <el-image
+      style="width: 80%; height: 80%"
+      :src="underConstructionImg"
+      :fit="fit"></el-image>
 </div>
 </template>
 
@@ -9,7 +12,12 @@
     export default {
     	components: {
     		headTop,
-    	},
+      },
+      data() {
+        return {
+          underConstructionImg: require("~/assets/underConstruction.jpg")
+        }
+      }
     }
 </script>
 
