@@ -7,7 +7,7 @@
     <el-table
       :data="tableData"
       style="width: 100%;"
-      max-height="440">
+      height="calc(100vh - 190px)">
       <el-table-column
         v-for="col in columns"
         :key="col.id"

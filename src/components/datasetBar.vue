@@ -139,7 +139,6 @@ export default {
             }
             rawDataWithKey.push(rowOjb);
           }
-          console.log(rawDataWithKey)
           store.commit("setRawData", rawDataWithKey);
         })
     }

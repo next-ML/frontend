@@ -1,14 +1,14 @@
 <template>
 <div class="fillcontain">
   <el-card shadow="never">
-    <chart style="width: 100%; height:calc(100vh - 250px);" :options="chartOptions"></chart>
+    <chart style="width: 100%; height:calc(100vh - 250px);" ref="dataChart" :options="chartOptions"></chart>
   </el-card>
   <el-card shadow="never" :body-style="{ padding: '5px 10px' }">
     <el-row type="flex" align="middle">
       <el-col :span="3" class="vis-type-box">
         <div style="margin: 12px 0; text-align: center;">图表类型</div>
         <el-select v-model="chartType" placeholder="请选择">
-          <el-option label="分布图" value="分布图">
+          <el-option label="分布图" value="distribution">
           </el-option>
         </el-select>
       </el-col>
@@ -21,13 +21,13 @@
           <draggable
             class="attribute-drop-area dragArea list-group"
             ghostClass="drop-ghost"
-            :list="rowAttributes"
+            :list="colAttributes"
             group="attributes"
             @change="drawChart"
           >
             <el-tag type="info" 
                     class="attr-tag"
-                    v-for="attr in rowAttributes" 
+                    v-for="attr in colAttributes" 
                     :key="attr.name">
               {{ attr.name }}
             </el-tag>
@@ -41,13 +41,13 @@
           <draggable
             class="attribute-drop-area dragArea list-group"
             ghostClass="drop-ghost"
-            :list="colAttributes"
+            :list="rowAttributes"
             group="attributes"
             @change="drawChart"
           >
             <el-tag type="info" 
                     class="attr-tag"
-                    v-for="attr in colAttributes" 
+                    v-for="attr in rowAttributes" 
                     :key="attr.name">
               {{ attr.name }}
             </el-tag>
@@ -65,6 +65,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import draggable from "vuedraggable";
 import 'echarts/lib/chart/bar';
 import 'echarts/lib/component/markLine'
@@ -80,13 +81,12 @@ export default {
     draggable
   },
   data() {
-    let mainTitle = this.$store.state.currentDataset.metadata.name;
     return {
-      chartType: "分布图",
+      chartType: "distribution",
       chartOptions: {
         title : {
-          text: mainTitle + this.chartType,
-          subtext: '直观展示属性间关系'
+          text: "分布图",
+          subtext: '直观地展示属性间关系'
         },
         tooltip : {
           trigger: 'axis'
@@ -104,18 +104,18 @@ export default {
           }
         },
         calculable : true,
-        xAxis : [
+        xAxis: [
           {
             type : 'category',
-            data : ['a','b', 'c', 'd', 'e']
+            data : ['a','b', 'c', 'd', 'e', 'f', 'g', 'h']
           }
         ],
-        yAxis : [
+        yAxis: [
           {
             type : 'value'
           }
         ],
-        series : [
+        series: [
           {
             name:'蒸发量',
             type:'bar',
@@ -149,18 +149,67 @@ export default {
             }
           }
         ]
-      },
+      }
     }
   },
   methods: {
     drawChart: function(evt) {
-      window.console.log(evt);
+      let config = {}
+      config['dataset_name'] = this.$store.state.currentDataset.metadata.name;
+      config['chart_type'] = this.chartType;
+      config['row_attrs'] = this.rowAttributes;
+      config['columns_attrs'] = this.colAttributes;
+      config['color_attr'] = this.$store.state.drawConfig.colorAttrs;
+      config['size_attr'] = this.$store.state.drawConfig.sizeAttrs;
+      config['style_attr'] = this.$store.state.drawConfig.styleAttrs;
+      let that = this;
+      axios
+        .post(["api", this.$store.state.userId, "drawer"].join("/"),
+                 config,
+                 {
+                   "content-type":"application/json"
+                 })
+        .then(function(response) {
+          let chartOptions = {};
+          chartOptions["title"] = {
+            text: "分布图",
+            subtext: '直观地展示属性间关系'
+          };
+          chartOptions["tooltip"] = {trigger: 'axis'}
+          chartOptions["toolbox"] =  {
+            show : true,
+            feature : {
+              dataView : {show: true, readOnly: false},
+              magicType : {show: true, type: ['line', 'bar']},
+              restore : {show: true},
+              saveAsImage : {show: true}
+            }
+          };
+
+          let data = response.data.data;
+          let xAxis = [];
+          for (const [left, width] of data.x_axis) {
+            xAxis.push(left.toFixed(1) + '-' + width.toFixed(1));
+          }
+          chartOptions["xAxis"] = [];
+          chartOptions["xAxis"].push({type : 'category', data: xAxis});
+          chartOptions["yAxis"] = []
+          chartOptions["yAxis"].push({type : 'value'});
+          let seris = {};
+          seris['name']
+          seris['type'] = 'bar';
+          seris['data'] = data.heights;
+          chartOptions["series"] = [];
+          chartOptions["series"].push(seris);
+          console.log(response);
+          that.$refs.dataChart.mergeOptions(chartOptions, true); // Not merge, but set.
+        })
     },
   },
   computed: {
     rowAttributes: {
       get() {
-        return this.$store.state.drawAttrRow;
+        return this.$store.state.drawConfig.rowAttrs;
       },
       set(value) {
         this.$store.commit('setDrawAttrRow', value);
@@ -168,12 +217,12 @@ export default {
     },
     colAttributes: {
       get() {
-        return this.$store.state.drawAttrCol;
+        return this.$store.state.drawConfig.colAttrs;
       },
       set(value) {
         this.$store.commit('setDrawAttrCol', value);
       }
-    }
+    },
   }
 }
 </script>

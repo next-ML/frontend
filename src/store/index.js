@@ -93,12 +93,23 @@ let state = {
       }
     ]
   },
-  drawAttrRow: [
-    // {"name": "aaa"}
-  ],
-  drawAttrCol: [
-    // {"name": "bbb"}
-  ]
+  drawConfig: {
+    rowAttrs: [
+      // {"name": "aaa"}
+    ],
+    colAttrs: [
+      // {"name": "bbb"}
+    ],
+    colorAttrs: [
+
+    ],
+    sizeAttrs: [
+
+    ],
+    styleAttrs: [
+      
+    ]
+  }
 }
 
 function initDatasetInfo(state) {
@@ -143,10 +154,10 @@ const mutations = {
     state.allDataset = allDataset;
   },
   setDrawAttrCol(state, attributes) {
-    state.drawAttrCol = attributes;
+    state.drawConfig.colAttrs = attributes;
   },
   setDrawAttrRow(state, attributes) {
-    state.drawAttrRow = attributes;
+    state.drawConfig.rowAttrs = attributes;
   }
 }
 
