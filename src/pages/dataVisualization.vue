@@ -1,10 +1,14 @@
 <template>
 <div class="fillcontain">
+  <!-- <loading :active.sync="isDrawing" 
+        :can-cancel="false" 
+        :is-full-page="true"></loading> -->
   <el-card shadow="never">
     <chart style="width: 100%; height:calc(100vh - 250px);" 
            ref="dataChart" 
            autoresize
-           :options="chartOptions"></chart>
+           :options="chartOptions">
+    </chart>
   </el-card>
   <el-card shadow="never" :body-style="{ padding: '5px 10px' }">
     <el-row type="flex" align="middle">
@@ -100,6 +104,7 @@
 <script>
 import axios from "axios";
 import draggable from "vuedraggable";
+import Loading from 'vue-loading-overlay';
 import 'echarts/lib/chart/bar';
 import 'echarts/lib/chart/line';
 import 'echarts/lib/component/markLine'
@@ -112,7 +117,7 @@ import 'echarts/lib/component/toolbox'
 
 export default {
   components: {
-    draggable
+    draggable, Loading
   },
   created() {
     this.$store.commit('setDrawAttrRow', []);
@@ -188,6 +193,7 @@ export default {
           }
         ]
       },
+      isDrawing: false,
     }
   },
   methods: {
@@ -216,6 +222,7 @@ export default {
       console.log(attrList)
     },
     drawChart() {
+      this.isDrawing = true;
       let config = {}
       config['dataset_name'] = this.$store.state.currentDataset.metadata.name;
       config['chart_type'] = this.chartType;
@@ -264,6 +271,7 @@ export default {
           chartOptions["series"] = [];
           chartOptions["series"].push(seris);
           that.$refs.dataChart.mergeOptions(chartOptions, true); // Not merge, but set.
+          that.isDrawing = false;
         })
     },
     removeRow(tag) {

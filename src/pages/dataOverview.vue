@@ -18,7 +18,7 @@
     </el-table>
     <loading :active.sync="isLoading" 
         :can-cancel="false" 
-        :is-full-page="fullPage"></loading>
+        :is-full-page="false"></loading>
   </el-card>
 </div>
 </template>
@@ -34,7 +34,6 @@ export default {
   },
   data() {
     return {
-      fullPage: false
     }
   },
   computed: {

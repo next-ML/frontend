@@ -150,7 +150,7 @@ const mutations = {
   },
   setLoadingDataFlag(state, flag) {
     state.isLoadingRawData = flag;
-  }
+  },
 }
 
 const actions = {
@@ -206,7 +206,6 @@ const actions = {
       })
   },
   initDatasetInfo({ state }) {
-
     axios
       .get(["api", state.userId, "dataset", "meta"].join("/"))
       .then(response => {
