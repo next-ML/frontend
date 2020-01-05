@@ -13,4 +13,4 @@ RUN cp -r dist/* /var/www/html \
 
 CMD ["nginx","-g","daemon off;"]
 
-# sudo docker run -d --name mlapp --net nextml-net -p 38385:80 xiaoziyang/nextml_frontend
+# sudo docker run -d --name mlapp --net nextml-net -p 38385:80 xiaoziyang/nextml-frontend

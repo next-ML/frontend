@@ -91,9 +91,13 @@
           </div>
         </div>
       </el-col>
-      <el-col :span="6">
+      <el-col :span="2">
         <el-button class="style-option" :class="{ undroppable: !colorDroppable }">颜色</el-button>
+      </el-col>
+      <el-col :span="2">
         <el-button class="style-option" :class="{ undroppable: !styleDroppable }">样式</el-button>
+      </el-col>
+      <el-col :span="2">
         <el-button class="style-option" :class="{ undroppable: !sizeDroppable }">大小</el-button>
       </el-col>
     </el-row>
@@ -343,7 +347,7 @@ export default {
 
 .style-option {
   height: 80px;
-  width: 71px;
+  width: 80%;
 }
 
 .vis-type-box {
