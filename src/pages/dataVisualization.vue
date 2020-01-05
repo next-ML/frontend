@@ -1,7 +1,10 @@
 <template>
 <div class="fillcontain">
   <el-card shadow="never">
-    <chart style="width: 100%; height:calc(100vh - 250px);" ref="dataChart" :options="chartOptions"></chart>
+    <chart style="width: 100%; height:calc(100vh - 250px);" 
+           ref="dataChart" 
+           autoresize
+           :options="chartOptions"></chart>
   </el-card>
   <el-card shadow="never" :body-style="{ padding: '5px 10px' }">
     <el-row type="flex" align="middle">
@@ -13,55 +16,81 @@
         </el-select>
       </el-col>
       <el-col :span="15">
-        <div class="tag-group attribute-select-box">
-          <span class="tag-group__title">
-            <i class="el-icon-s-data"></i>
-            <span class="row-and-col-mark">列</span>
-          </span>
-          <draggable
-            class="attribute-drop-area dragArea list-group"
-            ghostClass="drop-ghost"
-            :list="colAttributes"
-            group="attributes"
-            @change="drawChart"
-          >
+        <div class="tag-group attribute-select-box"
+             :class="{ undroppable: !colDroppable }">
+          <div v-if="colDroppable">
+            <drop @drop="onColAttrDrop">
+              <span class="tag-group__title">
+                <i class="el-icon-s-data"></i>
+                <span class="row-and-col-mark">列</span>
+              </span>
+              <el-tag type="info" 
+                      class="attr-tag"
+                      size="small"
+                      v-for="attr in colAttributes" 
+                      closable
+                      @close="removeCol(attr.name)"
+                      :key="attr.name">
+                {{ attr.name }}
+              </el-tag>
+            </drop>
+          </div>
+          <div v-else>
+            <span class="tag-group__title">
+              <i class="el-icon-s-data"></i>
+              <span class="row-and-col-mark">列</span>
+            </span>
             <el-tag type="info" 
                     class="attr-tag"
+                    size="small"
                     v-for="attr in colAttributes" 
                     closable
                     @close="removeCol(attr.name)"
                     :key="attr.name">
               {{ attr.name }}
             </el-tag>
-          </draggable>
+          </div>
         </div>
-        <div class="tag-group attribute-select-box">
-          <span class="tag-group__title">
-            <i class="el-icon-s-unfold"></i>
-            <span class="row-and-col-mark">行</span>
-          </span>
-          <draggable
-            class="attribute-drop-area dragArea list-group"
-            ghostClass="drop-ghost"
-            :list="rowAttributes"
-            group="attributes"
-            @change="drawChart"
-          >
+        <div class="tag-group attribute-select-box"
+             :class="{ undroppable: !rowDroppable }">
+          <div v-if="rowDroppable">
+            <drop @drop="onRowAttrDrop">
+              <span class="tag-group__title">
+                <i class="el-icon-s-unfold"></i>
+                <span class="row-and-col-mark">行</span>
+              </span>
+              <el-tag type="info" 
+                      class="attr-tag"
+                      size="small"
+                      v-for="attr in rowAttributes" 
+                      closable
+                      @close="removeRow(attr.name)"
+                      :key="attr.name">
+                {{ attr.name }}
+              </el-tag>
+            </drop>
+          </div>
+          <div v-else>
+            <span class="tag-group__title">
+              <i class="el-icon-s-unfold"></i>
+              <span class="row-and-col-mark">行</span>
+            </span>
             <el-tag type="info" 
                     class="attr-tag"
+                    size="small"
                     v-for="attr in rowAttributes" 
                     closable
                     @close="removeRow(attr.name)"
                     :key="attr.name">
               {{ attr.name }}
             </el-tag>
-          </draggable>
+          </div>
         </div>
       </el-col>
       <el-col :span="6">
-        <el-button class="style-option">颜色</el-button>
-        <el-button class="style-option">样式</el-button>
-        <el-button class="style-option">大小</el-button>
+        <el-button class="style-option" :class="{ undroppable: !colorDroppable }">颜色</el-button>
+        <el-button class="style-option" :class="{ undroppable: !styleDroppable }">样式</el-button>
+        <el-button class="style-option" :class="{ undroppable: !sizeDroppable }">大小</el-button>
       </el-col>
     </el-row>
   </el-card>
@@ -72,6 +101,7 @@
 import axios from "axios";
 import draggable from "vuedraggable";
 import 'echarts/lib/chart/bar';
+import 'echarts/lib/chart/line';
 import 'echarts/lib/component/markLine'
 import 'echarts/lib/component/legend'
 import 'echarts/lib/component/title'
@@ -157,11 +187,35 @@ export default {
             }
           }
         ]
-      }
+      },
     }
   },
   methods: {
-    drawChart: function(evt) {
+    onRowAttrDrop(attr) {
+      if (this.rowDroppable) {
+        this.onAttrDrop(attr, this.rowAttributes);
+        this.drawChart();
+      }
+    },
+    onColAttrDrop(attr) {
+      if (this.colDroppable) {
+        this.onAttrDrop(attr, this.colAttributes);
+      }
+    },
+    onAttrDrop(attr, attrList) {
+      let duplicate = false;
+      for (const a of attrList) {
+        if (a.name === attr) {
+          duplicate = true;
+          break;
+        }
+      }
+      if (!duplicate) {
+        attrList.push({name: attr});
+      }
+      console.log(attrList)
+    },
+    drawChart() {
       let config = {}
       config['dataset_name'] = this.$store.state.currentDataset.metadata.name;
       config['chart_type'] = this.chartType;
@@ -196,8 +250,8 @@ export default {
 
           let data = response.data.data;
           let xAxis = [];
-          for (const [left, width] of data.x_axis) {
-            xAxis.push(left.toFixed(1) + '-' + width.toFixed(1));
+          for (let [left, width] of data.x_axis) {
+            xAxis.push(left.toFixed(1) + '~' + width.toFixed(1));
           }
           chartOptions["xAxis"] = [];
           chartOptions["xAxis"].push({type : 'category', data: xAxis});
@@ -214,6 +268,7 @@ export default {
     },
     removeRow(tag) {
       this.rowAttributes.splice(this.rowAttributes.indexOf(tag), 1);
+      this.drawChart();
     },
     removeCol(tag) {
       this.colAttributes.splice(this.colAttributes.indexOf(tag), 1);
@@ -236,6 +291,21 @@ export default {
         this.$store.commit('setDrawAttrCol', value);
       }
     },
+    colDroppable() {
+      return false;
+    },
+    rowDroppable() {
+      return true;
+    },
+    colorDroppable() {
+      return false;
+    },
+    sizeDroppable() {
+      return false;
+    },
+    styleDroppable() {
+      return false;
+    }
   }
 }
 </script>
@@ -245,13 +315,16 @@ export default {
   border-style: solid;
   border-width: 1px;
   border-color: rgb(185, 184, 184);
-  margin: 3px 10px;
-  padding: 4px 10px;
+  margin: 6px 10px;
+  padding: 7px 10px;
   border-radius:5px;
   -moz-border-radius:5px;
+  height: 40px;
+  box-sizing: border-box;
 }
 
 .row-and-col-mark {
+  font-size: 18px;
   margin-left: 5px;
   margin-right: 5px;
   padding-right: 15px;
@@ -276,8 +349,16 @@ export default {
   display: inline;
 }
 
-.attr-tag{
+.attr-tag {
   margin: 0 3px;
+}
+
+.undroppable {
+  background-color: rgba(180, 179, 179, 0.5);
+}
+.undroppable:hover {
+  cursor:no-drop;
+  color: rgb(99, 97, 97);
 }
 
 </style>

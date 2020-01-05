@@ -8,6 +8,7 @@
         class="infinite-list-wrapper">
       <ul class="dataset-list list">
         <li class="dataset-item" 
+            :class="{'current-Dataset': info.name === $store.state.currentDataset.metadata.name}"
             v-for="info in datasetInfo" 
             :key="info.id"
             @click="loadDataset(info.name)">
@@ -24,19 +25,18 @@
     <div style="overflow:auto; height: calc(50% - 30px);" 
         class="infinite-list-wrapper">
       <ul class="dataset-list list">
-        <draggable
-          class="dragArea list-group"
-          :list="categoryAttributes"
-          :group="{ name: 'attributes', pull: 'clone', put: false }"
-          :clone="cloneAttribute"
-        >
-          <li class="attribute-item" 
-              v-for="column in categoryAttributes" 
-              :key="column.name">
+        <li class="attribute-item" 
+            v-for="column in categoryAttributes" 
+            :key="column.name">
+          <drag 
+            :transfer-data="column.name"
+            :effect-allowed="['copy']"
+				    drop-effect="copy"
+          >
             <i class="el-icon-rank"></i>
             <span class="file-name">{{ column.name }}</span>
-          </li>
-        </draggable>
+          </drag>
+        </li>
       </ul>
     </div>
     <div class="sider-bar-head">
@@ -45,19 +45,18 @@
     <div style="overflow:auto; height: calc(50% - 31px);" 
         class="infinite-list-wrapper">
       <ul class="dataset-list list">
-        <draggable
-          class="dragArea list-group"
-          :list="numericAttributes"
-          :group="{ name: 'attributes', pull: 'clone', put: false }"
-          :clone="cloneAttribute"
-        >
-          <li class="attribute-item"
-            v-for="column in numericAttributes" 
-            :key="column.name">
+        <li class="attribute-item"
+          v-for="column in numericAttributes" 
+          :key="column.name">
+          <drag 
+            :transfer-data="column.name"
+            :effect-allowed="['copy']"
+				    drop-effect="copy"
+          >
             <i class="el-icon-rank"></i>
             <span class="file-name">{{ column.name }}</span>
-          </li>
-        </draggable>
+          </drag>
+        </li>
       </ul>
     </div>
   </div>
@@ -172,5 +171,17 @@ export default {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: rgb(139, 138, 138); 
+}
+
+.current-Dataset {
+  color:rgb(22, 22, 22);
+  background-color: rgba(177, 191, 204, 0.8);
+  font-weight: bold;
+  border-radius:25px;
+}
+.current-Dataset:hover {
+  color:rgb(22, 22, 22);
+  background-color: rgba(177, 191, 204, 0.8);
+  font-weight: bold;
 }
 </style>
