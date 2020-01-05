@@ -11,16 +11,11 @@
         </el-menu-item>
       </el-col>
       <el-col :span="3">
-        <el-menu-item class="task-item" index="dataVisualization">
+        <el-menu-item 
+          class="task-item" 
+          index="dataVisualization">
           <span class="task-text">
-            可视化
-          </span>
-        </el-menu-item>
-      </el-col>
-      <el-col :span="3">
-        <el-menu-item class="task-item" index="dataPreprocessing">
-          <span class="task-text">
-            预处理
+            可视化分析
           </span>
         </el-menu-item>
       </el-col>
@@ -31,14 +26,7 @@
           </span>
         </el-menu-item>
       </el-col>
-      <el-col :span="3">
-        <el-menu-item class="task-item" index="modelEvaluation">
-          <span class="task-text">
-            模型评估
-          </span>
-        </el-menu-item>
-      </el-col>
-      <el-col :span="3" :offset="6">
+      <el-col :span="3" :offset="12">
         <el-link class="load-dataset-button" icon="el-icon-plus">
           <router-link to="/uploadData">上传数据集</router-link>
         </el-link>

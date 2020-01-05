@@ -8,7 +8,7 @@
         class="infinite-list-wrapper">
       <ul class="dataset-list list">
         <li class="dataset-item" 
-            :class="{'current-Dataset': info.name === $store.state.currentDataset.metadata.name}"
+            :class="{'current-dataset': info.name === $store.state.currentDataset.metadata.name}"
             v-for="info in datasetInfo" 
             :key="info.id"
             @click="loadDataset(info.name)">
@@ -20,42 +20,17 @@
   </div>
   <div style="height: 70%;" class="attributes-container">
     <div class="sider-bar-head">
-      类别属性
+      属性
     </div>
     <div style="overflow:auto; height: calc(50% - 30px);" 
         class="infinite-list-wrapper">
       <ul class="dataset-list list">
         <li class="attribute-item" 
-            v-for="column in categoryAttributes" 
-            :key="column.name">
-          <drag 
-            :transfer-data="column.name"
-            :effect-allowed="['copy']"
-				    drop-effect="copy"
-          >
-            <i class="el-icon-rank"></i>
-            <span class="file-name">{{ column.name }}</span>
-          </drag>
-        </li>
-      </ul>
-    </div>
-    <div class="sider-bar-head">
-      数值属性
-    </div>
-    <div style="overflow:auto; height: calc(50% - 31px);" 
-        class="infinite-list-wrapper">
-      <ul class="dataset-list list">
-        <li class="attribute-item"
-          v-for="column in numericAttributes" 
+          v-for="column in attributes" 
+          @click="attributeClicked(column.name)"
           :key="column.name">
-          <drag 
-            :transfer-data="column.name"
-            :effect-allowed="['copy']"
-				    drop-effect="copy"
-          >
-            <i class="el-icon-rank"></i>
-            <span class="file-name">{{ column.name }}</span>
-          </drag>
+          <i class="el-icon-rank"></i>
+          <span class="file-name">{{ column.name }}</span>
         </li>
       </ul>
     </div>
@@ -64,13 +39,11 @@
 </template>
 
 <script>
-import draggable from "vuedraggable";
 import axios from 'axios';
 
 export default {
   name: "DatasetBar",
   components: {
-    draggable
   },
   data() {
     return {
@@ -85,6 +58,9 @@ export default {
     },
     numericAttributes() {
       return this.$store.state.currentDataset.numericAttributes;
+    },
+    attributes() {
+      return this.categoryAttributes.concat(this.numericAttributes);
     }
   },
   methods: {
@@ -98,6 +74,13 @@ export default {
     },
     loadRawData(datasetName, columns) {
       this.$store.dispatch("loadRawData", datasetName, columns);
+    },
+    attributeClicked(attrName) {
+      let msg = this.$store.state.redrawMsg;
+      this.$store.state.redrawMsg = {
+        flowNo: msg.flowNo + 1,
+        attrName: attrName
+      }
     }
   }
 }
@@ -173,13 +156,13 @@ export default {
   background: rgb(139, 138, 138); 
 }
 
-.current-Dataset {
+.current-dataset {
   color:rgb(22, 22, 22);
   background-color: rgba(177, 191, 204, 0.8);
   font-weight: bold;
   border-radius:25px;
 }
-.current-Dataset:hover {
+.current-dataset:hover {
   color:rgb(22, 22, 22);
   background-color: rgba(177, 191, 204, 0.8);
   font-weight: bold;

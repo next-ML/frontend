@@ -91,7 +91,7 @@ let state = {
         "地址": "上海市普陀区金沙江路 1518 弄",
         "邮编": 200333
       }
-    ]
+    ],
   },
   drawConfig: {
     rowAttrs: [
@@ -111,6 +111,11 @@ let state = {
     ]
   },
   isLoadingRawData: false,
+  redrawMsg: {
+    // flowNo += 1 to change the object
+    flowNo: 0,
+    attrName: "",
+  }
 }
 
 function transferAttributesNameFormat(attributes) {
@@ -118,7 +123,7 @@ function transferAttributesNameFormat(attributes) {
   for (const attr of attributes) {
     attr_list.push({name: attr});
   }
-  return attr_list
+  return attr_list;
 }
 
 const mutations = {
