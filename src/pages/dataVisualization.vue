@@ -155,7 +155,7 @@ export default {
           let chartOptions = {};
           chartOptions["title"] = {
             text: "分布图",
-            subtext: '直观地展示属性间关系'
+            subtext: '直观展示属性的分布情况'
           };
           chartOptions["tooltip"] = {trigger: 'axis'}
           chartOptions["toolbox"] =  {

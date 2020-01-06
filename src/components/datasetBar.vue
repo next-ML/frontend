@@ -22,7 +22,7 @@
     <div class="sider-bar-head">
       属性
     </div>
-    <div style="overflow:auto; height: calc(50% - 30px);" 
+    <div style="overflow:auto; height: calc(100% - 30px);" 
         class="infinite-list-wrapper">
       <ul class="dataset-list list">
         <li class="attribute-item" 
