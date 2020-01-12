@@ -39,7 +39,6 @@
 <script>
 import axios from "axios";
 import Loading from 'vue-loading-overlay';
-
 import DistributionChart from "~/components/dataAnalysis/distributionChart"
 import ConnectionChart from "~/components/dataAnalysis/connectionChart"
 import BoxingChart from "~/components/dataAnalysis/boxingChart"

@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import 'echarts/lib/chart/boxplot';
+import 'echarts/lib/chart/boxplot'
 import 'echarts/lib/component/markLine'
 import 'echarts/lib/component/legend'
 import 'echarts/lib/component/title'
@@ -46,19 +46,9 @@ export default {
       return {
         title: [
           {
-            text: 'Michelson-Morley Experiment',
+            text: '盒图',
             left: 'center',
           },
-          {
-            text: 'upper: Q3 + 1.5 * IQR \nlower: Q1 - 1.5 * IQR',
-            borderColor: '#999',
-            borderWidth: 1,
-            textStyle: {
-                fontSize: 14
-            },
-            left: '10%',
-            top: '90%'
-          }
         ],
         tooltip: {
         trigger: 'item',
@@ -66,16 +56,21 @@ export default {
             type: 'shadow'
         }
       },
-      grid: {
-          left: '10%',
-          right: '10%',
-          bottom: '15%'
-      },
-      xAxis: {
+      grid: [
+          {x: '7%', y: '7%', width: '38%', height: '38%'},
+          {x2: '7%', y: '7%', width: '38%', height: '38%'},
+          {x: '7%', y2: '7%', width: '38%', height: '38%'},
+          {x2: '7%', y2: '7%', width: '38%', height: '38%'}
+      ],
+      xAxis: [
+        {
           type: 'category',
+          gridIndex: 0,
           data: this.boxingData.axisData,
           boundaryGap: true,
           nameGap: 30,
+          xAxisIndex: 0,
+          yAxisIndex: 0,
           splitArea: {
               show: false
           },
@@ -85,37 +80,174 @@ export default {
           splitLine: {
               show: false
           }
-      },
-      yAxis: {
+        },
+        {
+          type: 'category',
+          gridIndex: 1,
+          data: this.boxingData.axisData,
+          boundaryGap: true,
+          nameGap: 30,
+          xAxisIndex: 1,
+          yAxisIndex: 1,
+          splitArea: {
+              show: false
+          },
+          axisLabel: {
+              formatter: 'expr {value}'
+          },
+          splitLine: {
+              show: false
+          }
+        },
+        {
+          type: 'category',
+          gridIndex: 2,
+          data: this.boxingData.axisData,
+          boundaryGap: true,
+          nameGap: 30,
+          xAxisIndex: 2,
+          yAxisIndex: 2,
+          splitArea: {
+              show: false
+          },
+          axisLabel: {
+              formatter: 'expr {value}'
+          },
+          splitLine: {
+              show: false
+          }
+        },
+        {
+          type: 'category',
+          gridIndex: 3,
+          data: this.boxingData.axisData,
+          boundaryGap: true,
+          nameGap: 30,
+          xAxisIndex: 3,
+          yAxisIndex: 3,
+          splitArea: {
+              show: false
+          },
+          axisLabel: {
+              formatter: 'expr {value}'
+          },
+          splitLine: {
+              show: false
+          }
+        },
+      ],
+      yAxis: [
+        {
           type: 'value',
-          name: 'km/s minus 299,000',
+          gridIndex: 0,
           splitArea: {
               show: true
           }
-      },
+        },
+        {
+          type: 'value',
+          gridIndex: 1,
+          splitArea: {
+              show: true
+          }
+        },
+        {
+          type: 'value',
+          gridIndex: 2,
+          splitArea: {
+              show: true
+          }
+        },
+        {
+          type: 'value',
+          gridIndex: 3,
+          splitArea: {
+              show: true
+          }
+        },
+      ],
       series: [
         {
-            name: 'boxplot',
-            type: 'boxplot',
-            data: this.boxingData.boxData,
-            tooltip: {
-                formatter: function (param) {
-                    return [
-                        'Experiment ' + param.name + ': ',
-                        'upper: ' + param.data[5],
-                        'Q3: ' + param.data[4],
-                        'median: ' + param.data[3],
-                        'Q1: ' + param.data[2],
-                        'lower: ' + param.data[1]
-                    ].join('<br/>');
-                }
+          name: 'boxplot',
+          type: 'boxplot',
+          xAxisIndex: 0,
+          yAxisIndex: 0,
+          data: this.boxingData.boxData,
+          tooltip: {
+            formatter: function (param) {
+              return [
+                  'Experiment ' + param.name + ': ',
+                  'upper: ' + param.data[5],
+                  'Q3: ' + param.data[4],
+                  'median: ' + param.data[3],
+                  'Q1: ' + param.data[2],
+                  'lower: ' + param.data[1]
+              ].join('<br/>');
             }
-          },
-          {
-            name: 'outlier',
-            type: 'scatter',
-            data: this.boxingData.outliers
           }
+        },
+        {
+          name: 'boxplot',
+          type: 'boxplot',
+          xAxisIndex: 1,
+          yAxisIndex: 1,
+          data: this.boxingData.boxData,
+          tooltip: {
+            formatter: function (param) {
+              return [
+                  'Experiment ' + param.name + ': ',
+                  'upper: ' + param.data[5],
+                  'Q3: ' + param.data[4],
+                  'median: ' + param.data[3],
+                  'Q1: ' + param.data[2],
+                  'lower: ' + param.data[1]
+              ].join('<br/>');
+            }
+          }
+        },
+        {
+          name: 'boxplot',
+          type: 'boxplot',
+          xAxisIndex: 2,
+          yAxisIndex: 2,
+          data: this.boxingData.boxData,
+          tooltip: {
+            formatter: function (param) {
+              return [
+                  'Experiment ' + param.name + ': ',
+                  'upper: ' + param.data[5],
+                  'Q3: ' + param.data[4],
+                  'median: ' + param.data[3],
+                  'Q1: ' + param.data[2],
+                  'lower: ' + param.data[1]
+              ].join('<br/>');
+            }
+          }
+        },
+        {
+          name: 'boxplot',
+          type: 'boxplot',
+          xAxisIndex: 3,
+          yAxisIndex: 3,
+          data: this.boxingData.boxData,
+          tooltip: {
+            formatter: function (param) {
+              return [
+                  'Experiment ' + param.name + ': ',
+                  'upper: ' + param.data[5],
+                  'Q3: ' + param.data[4],
+                  'median: ' + param.data[3],
+                  'Q1: ' + param.data[2],
+                  'lower: ' + param.data[1]
+              ].join('<br/>');
+            }
+          }
+        },
+        {
+          name: 'outlier',
+          type: 'scatter',
+          data: this.boxingData.outliers
+        }
         ]
       }
     },

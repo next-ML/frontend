@@ -111,7 +111,7 @@ export default {
           bottom: '15%'
         },
         series: [{
-          name: 'Punch Card',
+          name: '协方差',
           type: 'heatmap',
           data: this.heatmapData.data,
           label: {
