@@ -10,7 +10,6 @@
 
 <script>
 import axios from "axios";
-
 import 'echarts/lib/chart/heatmap';
 import 'echarts/lib/component/markLine'
 import 'echarts/lib/component/legend'

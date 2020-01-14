@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import 'echarts/lib/chart/boxplot'
 import 'echarts/lib/component/markLine'
 import 'echarts/lib/component/legend'
@@ -21,28 +22,127 @@ export default {
   name: "BoxingChart",
   data() {
     return {
-      boxingData: {
-        axisData: ["0", "1", "2", "3", "4"],
-        boxData: [
-          [655, 850, 940, 980, 1070],
-          [760, 800, 845, 885, 960],
-          [780, 840, 855, 880, 940],
-          [720, 767.5, 815, 865, 920],
-          [740, 807.5, 810, 870, 950]
+      boxingData: [
+          {
+            axisData: ["0", "1", "2", "3", "4"],
+            boxData:
+              [
+                [655, 850, 940, 980, 1070],
+                [760, 800, 845, 885, 960],
+                [780, 840, 855, 880, 940],
+                [720, 767.5, 815, 865, 920],
+                [740, 807.5, 810, 870, 950]
+              ],
+            outliers: [
+              [0, 650],
+              [2, 620],
+              [2, 720],
+              [2, 720],
+              [2, 950],
+              [2, 970]
+            ]
+          },
+          {
+            axisData: ["0", "1", "2", "3", "4"],
+            boxData:
+              [
+                [655, 850, 940, 980, 1070],
+                [760, 800, 845, 885, 960],
+                [780, 840, 855, 880, 940],
+                [720, 767.5, 815, 865, 920],
+                [740, 807.5, 810, 870, 950]
+              ],
+            outliers: [
+              [0, 650],
+              [2, 620],
+              [2, 720],
+              [2, 720],
+              [2, 950],
+              [2, 970]
+            ]
+          },
+          {
+            axisData: ["0", "1", "2", "3", "4"],
+            boxData:
+              [
+                [655, 850, 940, 980, 1070],
+                [760, 800, 845, 885, 960],
+                [780, 840, 855, 880, 940],
+                [720, 767.5, 815, 865, 920],
+                [740, 807.5, 810, 870, 950]
+              ],
+            outliers: [
+              [0, 650],
+              [2, 620],
+              [2, 720],
+              [2, 720],
+              [2, 950],
+              [2, 970]
+            ]
+          },
+          {
+            axisData: ["a", "b", "c", "d", "e"],
+            boxData:
+              [
+                [655, 850, 940, 980, 1070],
+                [760, 800, 845, 885, 960],
+                [780, 840, 855, 880, 940],
+                [720, 767.5, 815, 865, 920],
+                [740, 807.5, 810, 870, 950]
+              ],
+            outliers: [
+              [0, 650],
+              [2, 620],
+              [2, 720],
+              [2, 720],
+              [2, 950],
+              [2, 970]
+            ]
+          }
         ],
-        outliers: [
-          [0, 650],
-          [2, 620],
-          [2, 720],
-          [2, 720],
-          [2, 950],
-          [2, 970]
-        ]
-      },
+      loaded: false,
     }
   },
   computed: {
     options() {
+      if (!this.loaded) {
+        let config = {};
+        let that = this;
+        config['dataset_name'] = this.$store.state.currentDataset.metadata.name;
+        config['chart_type'] = "boxing";
+        axios
+          .post(["api", this.$store.state.userId, "drawer"].join("/"),
+                config,
+                 {
+                   "content-type":"application/json"
+                 })
+          .then(function(response) {
+            let data = response.data;
+            let boxingData = [];
+            for (const subPlot of data) {
+              let axisData = [];
+              let boxData = [];
+              let outliers = [];
+              for (const bar of subPlot) {
+                axisData.push(bar["name"]);
+                boxData.push(bar["points"]);
+                for (const out of bar["outliers"]) {
+                  outliers.push([bar["name"], out])
+                }
+              }
+              boxingData.push({
+                axisData: axisData,
+                boxData: boxData,
+                outliers, outliers
+              });
+            }
+            that.boxingData = boxingData;
+            that.loaded = true;
+          })
+          .catch(function(error) {
+            alert("error: " + error);
+          })
+      }
       return {
         title: [
           {
@@ -66,16 +166,13 @@ export default {
         {
           type: 'category',
           gridIndex: 0,
-          data: this.boxingData.axisData,
+          data: this.boxingData[0].axisData,
           boundaryGap: true,
           nameGap: 30,
           xAxisIndex: 0,
           yAxisIndex: 0,
           splitArea: {
               show: false
-          },
-          axisLabel: {
-              formatter: 'expr {value}'
           },
           splitLine: {
               show: false
@@ -84,16 +181,13 @@ export default {
         {
           type: 'category',
           gridIndex: 1,
-          data: this.boxingData.axisData,
+          data: this.boxingData[1].axisData,
           boundaryGap: true,
           nameGap: 30,
           xAxisIndex: 1,
           yAxisIndex: 1,
           splitArea: {
               show: false
-          },
-          axisLabel: {
-              formatter: 'expr {value}'
           },
           splitLine: {
               show: false
@@ -102,16 +196,13 @@ export default {
         {
           type: 'category',
           gridIndex: 2,
-          data: this.boxingData.axisData,
+          data: this.boxingData[2].axisData,
           boundaryGap: true,
           nameGap: 30,
           xAxisIndex: 2,
           yAxisIndex: 2,
           splitArea: {
               show: false
-          },
-          axisLabel: {
-              formatter: 'expr {value}'
           },
           splitLine: {
               show: false
@@ -120,16 +211,13 @@ export default {
         {
           type: 'category',
           gridIndex: 3,
-          data: this.boxingData.axisData,
+          data: this.boxingData[3].axisData,
           boundaryGap: true,
           nameGap: 30,
           xAxisIndex: 3,
           yAxisIndex: 3,
           splitArea: {
               show: false
-          },
-          axisLabel: {
-              formatter: 'expr {value}'
           },
           splitLine: {
               show: false
@@ -172,16 +260,16 @@ export default {
           type: 'boxplot',
           xAxisIndex: 0,
           yAxisIndex: 0,
-          data: this.boxingData.boxData,
+          data: this.boxingData[0].boxData,
           tooltip: {
             formatter: function (param) {
               return [
-                  'Experiment ' + param.name + ': ',
-                  'upper: ' + param.data[5],
-                  'Q3: ' + param.data[4],
-                  'median: ' + param.data[3],
-                  'Q1: ' + param.data[2],
-                  'lower: ' + param.data[1]
+                  '取值 ' + param.name + ': ',
+                  '上界: ' + param.data[5],
+                  '3/4分位数: ' + param.data[4],
+                  '中位数: ' + param.data[3],
+                  '1/4分位数: ' + param.data[2],
+                  '下界: ' + param.data[1]
               ].join('<br/>');
             }
           }
@@ -191,16 +279,16 @@ export default {
           type: 'boxplot',
           xAxisIndex: 1,
           yAxisIndex: 1,
-          data: this.boxingData.boxData,
+          data: this.boxingData[1].boxData,
           tooltip: {
             formatter: function (param) {
               return [
-                  'Experiment ' + param.name + ': ',
-                  'upper: ' + param.data[5],
-                  'Q3: ' + param.data[4],
-                  'median: ' + param.data[3],
-                  'Q1: ' + param.data[2],
-                  'lower: ' + param.data[1]
+                  '取值 ' + param.name + ': ',
+                  '上界: ' + param.data[5],
+                  '3/4分位数: ' + param.data[4],
+                  '中位数: ' + param.data[3],
+                  '1/4分位数: ' + param.data[2],
+                  '下界: ' + param.data[1]
               ].join('<br/>');
             }
           }
@@ -210,16 +298,16 @@ export default {
           type: 'boxplot',
           xAxisIndex: 2,
           yAxisIndex: 2,
-          data: this.boxingData.boxData,
+          data: this.boxingData[2].boxData,
           tooltip: {
             formatter: function (param) {
               return [
-                  'Experiment ' + param.name + ': ',
-                  'upper: ' + param.data[5],
-                  'Q3: ' + param.data[4],
-                  'median: ' + param.data[3],
-                  'Q1: ' + param.data[2],
-                  'lower: ' + param.data[1]
+                  '取值 ' + param.name + ': ',
+                  '上界: ' + param.data[5],
+                  '3/4分位数: ' + param.data[4],
+                  '中位数: ' + param.data[3],
+                  '1/4分位数: ' + param.data[2],
+                  '下界: ' + param.data[1]
               ].join('<br/>');
             }
           }
@@ -229,16 +317,16 @@ export default {
           type: 'boxplot',
           xAxisIndex: 3,
           yAxisIndex: 3,
-          data: this.boxingData.boxData,
+          data: this.boxingData[3].boxData,
           tooltip: {
             formatter: function (param) {
               return [
-                  'Experiment ' + param.name + ': ',
-                  'upper: ' + param.data[5],
-                  'Q3: ' + param.data[4],
-                  'median: ' + param.data[3],
-                  'Q1: ' + param.data[2],
-                  'lower: ' + param.data[1]
+                  '取值 ' + param.name + ': ',
+                  '上界: ' + param.data[5],
+                  '3/4分位数: ' + param.data[4],
+                  '中位数: ' + param.data[3],
+                  '1/4分位数: ' + param.data[2],
+                  '下界: ' + param.data[1]
               ].join('<br/>');
             }
           }
@@ -246,8 +334,31 @@ export default {
         {
           name: 'outlier',
           type: 'scatter',
-          data: this.boxingData.outliers
-        }
+          xAxisIndex: 0,
+          yAxisIndex: 0,
+          data: this.boxingData[0].outliers
+        },
+        {
+          name: 'outlier',
+          type: 'scatter',
+          xAxisIndex: 1,
+          yAxisIndex: 1,
+          data: this.boxingData[1].outliers
+        },
+        {
+          name: 'outlier',
+          type: 'scatter',
+          xAxisIndex: 2,
+          yAxisIndex: 2,
+          data: this.boxingData[2].outliers
+        },
+        {
+          name: 'outlier',
+          type: 'scatter',
+          xAxisIndex: 3,
+          yAxisIndex: 3,
+          data: this.boxingData[3].outliers
+        },
         ]
       }
     },
