@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import 'echarts/lib/chart/scatter';
 import 'echarts/lib/component/title'
 import 'echarts/lib/component/tooltip'
@@ -17,6 +18,7 @@ export default {
   name: "ConnectionChart",
   data() {
     return {
+      loaded: false,
       dataAll: [
         [
             [10.0, 8.04],
@@ -71,6 +73,13 @@ export default {
           [8.0, 6.89]
         ]
       ],
+      topFeatures: [
+        "aaa",
+        "bbb",
+        "ccc",
+        "ddd"
+      ],
+      targetCol: "jinpu_ug_ml",
       markLineOpt: {
         animation: false,
         label: {
@@ -95,30 +104,124 @@ export default {
   },
   computed: {
     options() {
+      if (!this.loaded) {
+        let config = {};
+        let that = this;
+        config['dataset_name'] = this.$store.state.currentDataset.metadata.name;
+        config['chart_type'] = "scatter";
+        let topFeatures = [];
+        axios
+          .post(["api", this.$store.state.userId, "drawer"].join("/"),
+                config,
+                 {
+                   "content-type":"application/json"
+                 })
+          .then(function(response) {
+            let data = response.data;
+            let dataAll = [];
+            for (const subPlot of data) {
+              dataAll.push(subPlot["points"]);
+              topFeatures.push(subPlot["name"]);
+            }
+            that.topFeatures = topFeatures;
+            that.dataAll = dataAll;
+            that.loaded = true;
+          })
+          .catch(function(error) {
+            alert("error: " + error);
+          })
+      }
       return {
-        title: {
-          text: '散点图',
-        },
+        title: [
+          {
+            left: '0%',
+            text: '散点图',
+            subtext: '描绘连续属性与目标属性之间的关联关系'
+          },
+          {
+            right: '55%',
+            top: '10%',
+            text: this.topFeatures[0] + '-' + this.targetCol + '关联图'
+          }, 
+          {
+            right: '7%',
+            top: '10%',
+            text: this.topFeatures[1] + '-' + this.targetCol + '关联图'
+          },
+          {
+            right: '55%',
+            top: '55%',
+            text: this.topFeatures[2] + '-' + this.targetCol + '关联图'
+          },
+          {
+            right: '7%',
+            top: '55%',
+            text: this.topFeatures[3] + '-' + this.targetCol + '关联图'
+          }
+        ],
         grid: [
-          {x: '7%', y: '7%', width: '38%', height: '38%'},
-          {x2: '7%', y: '7%', width: '38%', height: '38%'},
-          {x: '7%', y2: '7%', width: '38%', height: '38%'},
-          {x2: '7%', y2: '7%', width: '38%', height: '38%'}
+          {x: '7%', y: '16%', width: '38%', height: '32%'},
+          {x2: '7%', y: '16%', width: '38%', height: '32%'},
+          {x: '7%', y2: '7%', width: '38%', height: '32%'},
+          {x2: '7%', y2: '7%', width: '38%', height: '32%'}
         ],
         tooltip: {
           formatter: '{a}: ({c})'
         },
         xAxis: [
-          {gridIndex: 0, min: 0, max: 20},
-          {gridIndex: 1, min: 0, max: 20},
-          {gridIndex: 2, min: 0, max: 20},
-          {gridIndex: 3, min: 0, max: 20}
+          {
+            gridIndex: 0, 
+            name: this.topFeatures[0],
+            nameGap: 30,
+            nameLocation: "center"
+          },
+          {
+            gridIndex: 1, 
+            name: this.topFeatures[1],
+            nameGap: 30,
+            nameLocation: "center"
+          },
+          {
+            gridIndex: 2, 
+            name: this.topFeatures[2],
+            nameGap: 30,
+            nameLocation: "center"
+          },
+          {
+            gridIndex: 3, 
+            name: this.topFeatures[3],
+            nameGap: 30,
+            nameLocation: "center"
+          }
         ],
         yAxis: [
-          {gridIndex: 0, min: 0, max: 15},
-          {gridIndex: 1, min: 0, max: 15},
-          {gridIndex: 2, min: 0, max: 15},
-          {gridIndex: 3, min: 0, max: 15}
+          { gridIndex: 0, 
+            axisLine: {
+              onZero: false
+            }, 
+            name: this.targetCol
+          },
+          {
+            gridIndex: 1,
+            axisLine: {
+              onZero: false
+            },
+            name: this.targetCol
+          },
+          {
+            gridIndex: 2, 
+            axisLine: {
+              onZero: false
+            }, 
+            name: this.targetCol
+          },
+          {
+            gridIndex: 3, 
+            axisLine: {
+              onZero: false
+            }, 
+            name: this.targetCol
+          }
         ],
         series: [
           {
@@ -127,7 +230,7 @@ export default {
             xAxisIndex: 0,
             yAxisIndex: 0,
             data: this.dataAll[0],
-            markLine: this.markLineOpt
+            //markLine: this.markLineOpt
           },
           {
             name: 'II',
@@ -135,7 +238,7 @@ export default {
             xAxisIndex: 1,
             yAxisIndex: 1,
             data: this.dataAll[1],
-            markLine: this.markLineOpt
+            //markLine: this.markLineOpt
           },
           {
             name: 'III',
@@ -143,7 +246,7 @@ export default {
             xAxisIndex: 2,
             yAxisIndex: 2,
             data: this.dataAll[2],
-            markLine: this.markLineOpt
+            //markLine: this.markLineOpt
           },
           {
             name: 'IV',
@@ -151,7 +254,7 @@ export default {
             xAxisIndex: 3,
             yAxisIndex: 3,
             data: this.dataAll[3],
-            markLine: this.markLineOpt
+            //markLine: this.markLineOpt
           }
         ]
       }

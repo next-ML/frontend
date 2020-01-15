@@ -60,7 +60,8 @@ export default {
         return {
           color: ['#4682B4'],
           title: {
-            text: '特征重要程度排序'
+            text: '特征重要程度排序',
+            subtext: '利用线形回归的权重，分析各个特征的重要程度'
           },
           tooltip: {
             trigger: 'axis',

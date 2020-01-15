@@ -44,9 +44,9 @@ export default {
   },
   computed: {
     options() {
+      let that = this;
       if (!this.loaded) {
         let config = {};
-        let that = this;
         config['dataset_name'] = this.$store.state.currentDataset.metadata.name;
         config['chart_type'] = "covariance";
         axios
@@ -77,10 +77,15 @@ export default {
       }
       return {
         title: {
-          text: '属性之间的协方差矩阵'
+          text: '属性之间的协方差矩阵',
+          subtext: '取12个关联性最强的属性，展现属性之间的协方差'
         },
         tooltip: {
-          position: 'top'
+          position: 'top',
+          formatter: function (p) {
+            return that.heatmapData.xAxis[p.data[0]] + ' - ' + that.heatmapData.xAxis[p.data[1]]
+                    + `</br>协方差：` + p.data[2];
+          }
         },
         animation: false,
         xAxis: {

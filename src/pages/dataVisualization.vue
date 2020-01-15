@@ -37,7 +37,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import Loading from 'vue-loading-overlay';
 import DistributionChart from "~/components/dataAnalysis/distributionChart"
 import ConnectionChart from "~/components/dataAnalysis/connectionChart"
@@ -60,11 +59,6 @@ export default {
     this.$store.commit('setDrawAttrRow', []);
     this.$store.commit('setDrawAttrCol', []);
   },
-  watch: {
-    redrawMsg: function(newMsg, oldMsg) {
-      this.drawDispChart(newMsg.attrName);
-    }
-  },
   data() {
     return {
       chartType: "distribution",
@@ -85,57 +79,6 @@ export default {
       }
       console.log(attrList)
     },
-    drawDispChart(attr) {
-      this.isDrawing = true;
-      let config = {}
-      config['dataset_name'] = this.$store.state.currentDataset.metadata.name;
-      config['chart_type'] = this.chartType;
-      let rowAttributes = []
-      rowAttributes.push({name: attr});
-      config['row_attrs'] = rowAttributes;
-      let that = this;
-      axios
-        .post(["api", this.$store.state.userId, "drawer"].join("/"),
-                 config,
-                 {
-                   "content-type":"application/json"
-                 })
-        .then(function(response) {
-          let dispChartOption = {};
-          dispChartOption["title"] = {
-            text: "分布图",
-            subtext: '直观展示属性的分布情况'
-          };
-          dispChartOption["tooltip"] = {trigger: 'axis'}
-          dispChartOption["toolbox"] =  {
-            show : true,
-            feature : {
-              dataView : {show: true, readOnly: false},
-              magicType : {show: true, type: ['line', 'bar']},
-              restore : {show: true},
-              saveAsImage : {show: true}
-            }
-          };
-
-          let data = response.data.data;
-          let xAxis = [];
-          for (let [left, width] of data.x_axis) {
-            xAxis.push(left.toFixed(1) + '~' + width.toFixed(1));
-          }
-          dispChartOption["xAxis"] = [];
-          dispChartOption["xAxis"].push({type : 'category', data: xAxis});
-          dispChartOption["yAxis"] = []
-          dispChartOption["yAxis"].push({type : 'value'});
-          let seris = {};
-          seris['name']
-          seris['type'] = 'bar';
-          seris['data'] = data.heights;
-          dispChartOption["series"] = [];
-          dispChartOption["series"].push(seris);
-          that.$refs.dispChart.mergeOptions(dispChartOption, true); // Not merge, but set.
-          that.isDrawing = false;
-        })
-    },
     choseVisType(type) {
       this.chartType = type;
     }
@@ -155,9 +98,6 @@ export default {
     },
     styleDroppable() {
       return false;
-    },
-    redrawMsg() {
-      return this.$store.state.redrawMsg;
     },
   }
 }

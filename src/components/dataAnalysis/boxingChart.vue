@@ -23,83 +23,90 @@ export default {
   data() {
     return {
       boxingData: [
-          {
-            axisData: ["0", "1", "2", "3", "4"],
-            boxData:
-              [
-                [655, 850, 940, 980, 1070],
-                [760, 800, 845, 885, 960],
-                [780, 840, 855, 880, 940],
-                [720, 767.5, 815, 865, 920],
-                [740, 807.5, 810, 870, 950]
-              ],
-            outliers: [
-              [0, 650],
-              [2, 620],
-              [2, 720],
-              [2, 720],
-              [2, 950],
-              [2, 970]
-            ]
-          },
-          {
-            axisData: ["0", "1", "2", "3", "4"],
-            boxData:
-              [
-                [655, 850, 940, 980, 1070],
-                [760, 800, 845, 885, 960],
-                [780, 840, 855, 880, 940],
-                [720, 767.5, 815, 865, 920],
-                [740, 807.5, 810, 870, 950]
-              ],
-            outliers: [
-              [0, 650],
-              [2, 620],
-              [2, 720],
-              [2, 720],
-              [2, 950],
-              [2, 970]
-            ]
-          },
-          {
-            axisData: ["0", "1", "2", "3", "4"],
-            boxData:
-              [
-                [655, 850, 940, 980, 1070],
-                [760, 800, 845, 885, 960],
-                [780, 840, 855, 880, 940],
-                [720, 767.5, 815, 865, 920],
-                [740, 807.5, 810, 870, 950]
-              ],
-            outliers: [
-              [0, 650],
-              [2, 620],
-              [2, 720],
-              [2, 720],
-              [2, 950],
-              [2, 970]
-            ]
-          },
-          {
-            axisData: ["a", "b", "c", "d", "e"],
-            boxData:
-              [
-                [655, 850, 940, 980, 1070],
-                [760, 800, 845, 885, 960],
-                [780, 840, 855, 880, 940],
-                [720, 767.5, 815, 865, 920],
-                [740, 807.5, 810, 870, 950]
-              ],
-            outliers: [
-              [0, 650],
-              [2, 620],
-              [2, 720],
-              [2, 720],
-              [2, 950],
-              [2, 970]
-            ]
-          }
-        ],
+        {
+          axisData: ["0", "1", "2", "3", "4"],
+          boxData:
+            [
+              [655, 850, 940, 980, 1070],
+              [760, 800, 845, 885, 960],
+              [780, 840, 855, 880, 940],
+              [720, 767.5, 815, 865, 920],
+              [740, 807.5, 810, 870, 950]
+            ],
+          outliers: [
+            [0, 650],
+            [2, 620],
+            [2, 720],
+            [2, 720],
+            [2, 950],
+            [2, 970]
+          ]
+        },
+        {
+          axisData: ["0", "1", "2", "3", "4"],
+          boxData:
+            [
+              [655, 850, 940, 980, 1070],
+              [760, 800, 845, 885, 960],
+              [780, 840, 855, 880, 940],
+              [720, 767.5, 815, 865, 920],
+              [740, 807.5, 810, 870, 950]
+            ],
+          outliers: [
+            [0, 650],
+            [2, 620],
+            [2, 720],
+            [2, 720],
+            [2, 950],
+            [2, 970]
+          ]
+        },
+        {
+          axisData: ["0", "1", "2", "3", "4"],
+          boxData:
+            [
+              [655, 850, 940, 980, 1070],
+              [760, 800, 845, 885, 960],
+              [780, 840, 855, 880, 940],
+              [720, 767.5, 815, 865, 920],
+              [740, 807.5, 810, 870, 950]
+            ],
+          outliers: [
+            [0, 650],
+            [2, 620],
+            [2, 720],
+            [2, 720],
+            [2, 950],
+            [2, 970]
+          ]
+        },
+        {
+          axisData: ["a", "b", "c", "d", "e"],
+          boxData:
+            [
+              [655, 850, 940, 980, 1070],
+              [760, 800, 845, 885, 960],
+              [780, 840, 855, 880, 940],
+              [720, 767.5, 815, 865, 920],
+              [740, 807.5, 810, 870, 950]
+            ],
+          outliers: [
+            [0, 650],
+            [2, 620],
+            [2, 720],
+            [2, 720],
+            [2, 950],
+            [2, 970]
+          ]
+        }
+      ],
+      topFeatures: [
+        "aaa",
+        "bbb",
+        "ccc",
+        "ddd"
+      ],
+      targetCol: "jinpu_ug_ml",
       loaded: false,
     }
   },
@@ -119,11 +126,13 @@ export default {
           .then(function(response) {
             let data = response.data;
             let boxingData = [];
+            let topFeatures = [];
             for (const subPlot of data) {
               let axisData = [];
               let boxData = [];
               let outliers = [];
-              for (const bar of subPlot) {
+              topFeatures.push(subPlot["name"]);
+              for (const bar of subPlot["boxes"]) {
                 axisData.push(bar["name"]);
                 boxData.push(bar["points"]);
                 for (const out of bar["outliers"]) {
@@ -136,6 +145,7 @@ export default {
                 outliers, outliers
               });
             }
+            that.topFeatures = topFeatures;
             that.boxingData = boxingData;
             that.loaded = true;
           })
@@ -146,9 +156,30 @@ export default {
       return {
         title: [
           {
+            left: '0%',
             text: '盒图',
-            left: 'center',
+            subtext: '描绘离散属性与目标属性之间的关联关系'
           },
+          {
+            right: '55%',
+            top: '10%',
+            text: this.topFeatures[0] + '-' + this.targetCol + '关联图'
+          }, 
+          {
+            right: '7%',
+            top: '10%',
+            text: this.topFeatures[1] + '-' + this.targetCol + '关联图'
+          },
+          {
+            right: '55%',
+            top: '55%',
+            text: this.topFeatures[2] + '-' + this.targetCol + '关联图'
+          },
+          {
+            right: '7%',
+            top: '55%',
+            text: this.topFeatures[3] + '-' + this.targetCol + '关联图'
+          }
         ],
         tooltip: {
         trigger: 'item',
@@ -157,10 +188,10 @@ export default {
         }
       },
       grid: [
-          {x: '7%', y: '7%', width: '38%', height: '38%'},
-          {x2: '7%', y: '7%', width: '38%', height: '38%'},
-          {x: '7%', y2: '7%', width: '38%', height: '38%'},
-          {x2: '7%', y2: '7%', width: '38%', height: '38%'}
+          {x: '7%', y: '16%', width: '38%', height: '32%'},
+          {x2: '7%', y: '16%', width: '38%', height: '32%'},
+          {x: '7%', y2: '7%', width: '38%', height: '32%'},
+          {x2: '7%', y2: '7%', width: '38%', height: '32%'}
       ],
       xAxis: [
         {
@@ -176,7 +207,9 @@ export default {
           },
           splitLine: {
               show: false
-          }
+          },
+          name: this.topFeatures[0],
+          nameLocation: "center"
         },
         {
           type: 'category',
@@ -191,7 +224,9 @@ export default {
           },
           splitLine: {
               show: false
-          }
+          },
+          name: this.topFeatures[1],
+          nameLocation: "center"
         },
         {
           type: 'category',
@@ -206,7 +241,9 @@ export default {
           },
           splitLine: {
               show: false
-          }
+          },
+          name: this.topFeatures[2],
+          nameLocation: "center"
         },
         {
           type: 'category',
@@ -221,7 +258,9 @@ export default {
           },
           splitLine: {
               show: false
-          }
+          },
+          name: this.topFeatures[3],
+          nameLocation: "center"
         },
       ],
       yAxis: [
@@ -230,28 +269,32 @@ export default {
           gridIndex: 0,
           splitArea: {
               show: true
-          }
+          },
+          name: this.targetCol
         },
         {
           type: 'value',
           gridIndex: 1,
           splitArea: {
               show: true
-          }
+          },
+          name: this.targetCol
         },
         {
           type: 'value',
           gridIndex: 2,
           splitArea: {
               show: true
-          }
+          },
+          name: this.targetCol
         },
         {
           type: 'value',
           gridIndex: 3,
           splitArea: {
               show: true
-          }
+          },
+          name: this.targetCol
         },
       ],
       series: [

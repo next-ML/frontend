@@ -1,6 +1,6 @@
 <template>
 <div class="fillcontain">
-  <div style="height: 30%;" class="dataset-container">
+  <div style="height: 28%;" class="dataset-container">
     <div class="sider-bar-head">
       数据集
     </div>
@@ -18,7 +18,7 @@
       </ul>
     </div>
   </div>
-  <div style="height: 70%;" class="attributes-container">
+  <div style="height: 72%;" class="attributes-container">
     <div class="sider-bar-head">
       属性
     </div>
@@ -39,8 +39,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   name: "DatasetBar",
   components: {
