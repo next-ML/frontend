@@ -43,6 +43,13 @@ export default {
   name: "DatasetBar",
   components: {
   },
+  created() {
+    let allDataset = this.$store.state.allDataset;
+    console.log(allDataset)
+    if (allDataset.length > 0) {
+      this.loadDataset(allDataset[0].name);
+    }
+  },
   data() {
     return {
     }

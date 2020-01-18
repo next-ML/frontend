@@ -89,9 +89,6 @@ export default {
         tooltip : {
           trigger: 'axis'
         },
-        legend: {
-          data:['male','female']
-        },
         toolbox: {
           show : true,
           feature : {
@@ -105,7 +102,7 @@ export default {
         xAxis: [
           {
             type : 'category',
-            data : ['a','b', 'c', 'd', 'e', 'f', 'g', 'h']
+            data : []
           }
         ],
         yAxis: [
@@ -117,35 +114,12 @@ export default {
           {
             name:'蒸发量',
             type:'bar',
-            data:[2, 28, 38, 52, 45, 42, 13, 2],
+            data:[0],
             markPoint : {
-              data : [
-                {type : 'max', name: '最大值'},
-                {type : 'min', name: '最小值'}
-              ]
             },
             markLine : {
-              data : [
-                {type : 'average', name: '平均值'}
-              ]
             }
           },
-          {
-            name:'降水量',
-            type:'bar',
-            data:[6, 28, 70, 175, 18, 14, 2, 1],
-            markPoint : {
-              data : [
-                {name : '年最高', value : 182.2, xAxis: 7, yAxis: 183},
-                {name : '年最低', value : 2.3, xAxis: 11, yAxis: 3}
-              ]
-            },
-            markLine : {
-              data : [
-                {type : 'average', name : '平均值'}
-              ]
-            }
-          }
         ]
       }
     },

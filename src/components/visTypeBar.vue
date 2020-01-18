@@ -10,7 +10,7 @@
     </el-menu-item>
     <el-menu-item index="connection">
       <i class="el-icon-set-up"></i>
-      <span slot="title">关联分析</span>
+      <span slot="title">散点图分析</span>
     </el-menu-item>
     <el-menu-item index="boxing">
       <i class="el-icon-data-analysis"></i>
