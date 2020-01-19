@@ -44,10 +44,15 @@ export default {
   components: {
   },
   created() {
-    let allDataset = this.$store.state.allDataset;
-    console.log(allDataset)
-    if (allDataset.length > 0) {
-      this.loadDataset(allDataset[0].name);
+    if (this.allDataset.length > 0) {
+        this.loadDataset(this.allDataset[this.allDataset.length - 1].name);
+      }
+  },
+  watch: {
+    allDataset: function(newDataset, oldDataset) {
+      if (newDataset.length > 0) {
+        this.loadDataset(this.allDataset[newDataset.length - 1].name);
+      }
     }
   },
   data() {
@@ -66,6 +71,9 @@ export default {
     },
     attributes() {
       return this.categoryAttributes.concat(this.numericAttributes);
+    },
+    allDataset() {
+      return this.$store.state.allDataset;
     }
   },
   methods: {
@@ -87,7 +95,7 @@ export default {
         attrName: attrName
       }
     }
-  }
+  },
 }
 </script>
 
