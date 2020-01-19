@@ -5,6 +5,11 @@
         autoresize
         :options="options">
   </chart>
+  <div v-if="firstDraw" class="pointer">
+    <el-tooltip class="item" effect="dark" value="true" manual="true" content="点击左侧属性" placement="top-start">
+      <i class="el-icon-thumb rotate pointer-icon"></i>
+    </el-tooltip>
+  </div>
 </div>
 </template>
 
@@ -26,8 +31,15 @@ export default {
       this.drawDispChart(newMsg.attrName);
     }
   },
+  data() {
+    return {
+      chosedAttr: '',
+      firstDraw: true,
+    }
+  },
   methods: {
     drawDispChart(attr) {
+      this.firstDraw = false;
       this.isDrawing = true;
       let config = {}
       config['dataset_name'] = this.$store.state.currentDataset.metadata.name;
@@ -44,10 +56,16 @@ export default {
                  })
         .then(function(response) {
           let dispChartOption = {};
-          dispChartOption["title"] = {
-            text: "分布图",
-            subtext: '直观展示属性的分布情况'
-          };
+          dispChartOption["title"] = [
+            {
+              text: "分布图",
+              subtext: '直观展示属性的分布情况'
+            },
+            {
+              text: '已选中属性：' + attr,
+              bottom: '0%'
+            }
+          ];
           dispChartOption["tooltip"] = {trigger: 'axis'}
           dispChartOption["toolbox"] =  {
             show : true,
@@ -62,7 +80,7 @@ export default {
           let data = response.data.data;
           let xAxis = [];
           for (let [left, width] of data.x_axis) {
-            xAxis.push(left.toFixed(1) + '~' + width.toFixed(1));
+            xAxis.push(left.toFixed(1) + ' ~ ' + width.toFixed(1));
           }
           dispChartOption["xAxis"] = [];
           dispChartOption["xAxis"].push({type : 'category', data: xAxis});
@@ -82,10 +100,16 @@ export default {
   computed: {
     options() {
       return {
-      title : {
-          text: "分布图",
-          subtext: '直观展示属性的分布情况'
-        },
+        title : [
+          {
+            text: "分布图",
+            subtext: '直观展示属性的分布情况'
+          },
+          {
+            text: '已选中属性：' + this.chosedAttr,
+            bottom: '0%'
+          }
+        ],
         tooltip : {
           trigger: 'axis'
         },
@@ -134,5 +158,34 @@ export default {
 .chart-place {
   width: 100%;
   height:calc(100vh - 150px);
+}
+.rotate{
+  filter: progid: DXImageTransform.Microsoft.BasicImage(rotation=0.5);
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+}
+.pointer-icon{
+  font-size: 32px;
+}
+.pointer{
+  position: absolute;
+  top: 70%;
+  left: -10px;
+  z-index: 1000;
+  font-size: 30px;
+  -webkit-animation: pointer-move 2s infinite; /* Chrome, Safari, Opera */
+  animation: pointer-move 2s infinite;
+}
+/* Chrome, Safari, Opera */
+@-webkit-keyframes pointer-move {
+    50% {left: 10px;}
+}
+
+/* Standard syntax */
+@keyframes pointer-move {
+    50% {left: 10px;}
 }
 </style>
