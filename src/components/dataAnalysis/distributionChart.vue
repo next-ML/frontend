@@ -6,7 +6,7 @@
         :options="options">
   </chart>
   <div v-if="firstDraw" class="pointer">
-    <el-tooltip class="item" effect="dark" value="true" manual="true" content="点击左侧属性" placement="top-start">
+    <el-tooltip class="item" effect="dark" :value="true" :manual="true" content="点击左侧属性" placement="top-start">
       <i class="el-icon-thumb rotate pointer-icon"></i>
     </el-tooltip>
   </div>

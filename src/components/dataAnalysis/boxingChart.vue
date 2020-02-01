@@ -5,6 +5,23 @@
          autoresize
          :options="options">
   </chart>
+  <div class="question-mark">
+    <el-tooltip class="item" :open-delay=1 effect="light" placement="right-start">
+      <div slot="content">
+        <div class="helper-box">
+          盒图中每一列元素包含了中位数、75%分位数、25%分位数、上限、下限以及异常值。如下图：
+          <div>
+            <el-image :src="boxplotMeaningImgSrc"></el-image>
+          </div>
+          一般而言<br>
+          1、中位数反映了该属性的平均水平。<br>
+          2、长方形盒子的高度可以反映该属性的方差。<br>
+          3、在触须外的点即可以认为是离群点。
+        </div>
+      </div>
+      <i class="el-icon-question tips"></i>
+    </el-tooltip>
+  </div>
 </div>
 </template>
 
@@ -22,6 +39,7 @@ export default {
   name: "BoxingChart",
   data() {
     return {
+      boxplotMeaningImgSrc: require("~/assets/boxplotMeaning.jpg"),
       boxingData: [
         {
           axisData: ["0", "1", "2", "3", "4"],
@@ -182,226 +200,226 @@ export default {
           }
         ],
         tooltip: {
-        trigger: 'item',
-        axisPointer: {
+          trigger: 'item',
+          axisPointer: {
             type: 'shadow'
-        }
-      },
-      grid: [
-          {x: '7%', y: '16%', width: '38%', height: '32%'},
-          {x2: '7%', y: '16%', width: '38%', height: '32%'},
-          {x: '7%', y2: '7%', width: '38%', height: '32%'},
-          {x2: '7%', y2: '7%', width: '38%', height: '32%'}
-      ],
-      xAxis: [
-        {
-          type: 'category',
-          gridIndex: 0,
-          data: this.boxingData[0].axisData,
-          boundaryGap: true,
-          nameGap: 30,
-          xAxisIndex: 0,
-          yAxisIndex: 0,
-          splitArea: {
-              show: false
-          },
-          splitLine: {
-              show: false
-          },
-          name: this.topFeatures[0],
-          nameLocation: "center"
-        },
-        {
-          type: 'category',
-          gridIndex: 1,
-          data: this.boxingData[1].axisData,
-          boundaryGap: true,
-          nameGap: 30,
-          xAxisIndex: 1,
-          yAxisIndex: 1,
-          splitArea: {
-              show: false
-          },
-          splitLine: {
-              show: false
-          },
-          name: this.topFeatures[1],
-          nameLocation: "center"
-        },
-        {
-          type: 'category',
-          gridIndex: 2,
-          data: this.boxingData[2].axisData,
-          boundaryGap: true,
-          nameGap: 30,
-          xAxisIndex: 2,
-          yAxisIndex: 2,
-          splitArea: {
-              show: false
-          },
-          splitLine: {
-              show: false
-          },
-          name: this.topFeatures[2],
-          nameLocation: "center"
-        },
-        {
-          type: 'category',
-          gridIndex: 3,
-          data: this.boxingData[3].axisData,
-          boundaryGap: true,
-          nameGap: 30,
-          xAxisIndex: 3,
-          yAxisIndex: 3,
-          splitArea: {
-              show: false
-          },
-          splitLine: {
-              show: false
-          },
-          name: this.topFeatures[3],
-          nameLocation: "center"
-        },
-      ],
-      yAxis: [
-        {
-          type: 'value',
-          gridIndex: 0,
-          splitArea: {
-              show: true
-          },
-          name: this.targetCol
-        },
-        {
-          type: 'value',
-          gridIndex: 1,
-          splitArea: {
-              show: true
-          },
-          name: this.targetCol
-        },
-        {
-          type: 'value',
-          gridIndex: 2,
-          splitArea: {
-              show: true
-          },
-          name: this.targetCol
-        },
-        {
-          type: 'value',
-          gridIndex: 3,
-          splitArea: {
-              show: true
-          },
-          name: this.targetCol
-        },
-      ],
-      series: [
-        {
-          name: 'boxplot',
-          type: 'boxplot',
-          xAxisIndex: 0,
-          yAxisIndex: 0,
-          data: this.boxingData[0].boxData,
-          tooltip: {
-            formatter: function (param) {
-              return [
-                  '取值 ' + param.name + ': ',
-                  '上界: ' + param.data[5],
-                  '3/4分位数: ' + param.data[4],
-                  '中位数: ' + param.data[3],
-                  '1/4分位数: ' + param.data[2],
-                  '下界: ' + param.data[1]
-              ].join('<br/>');
-            }
           }
         },
-        {
-          name: 'boxplot',
-          type: 'boxplot',
-          xAxisIndex: 1,
-          yAxisIndex: 1,
-          data: this.boxingData[1].boxData,
-          tooltip: {
-            formatter: function (param) {
-              return [
-                  '取值 ' + param.name + ': ',
-                  '上界: ' + param.data[5],
-                  '3/4分位数: ' + param.data[4],
-                  '中位数: ' + param.data[3],
-                  '1/4分位数: ' + param.data[2],
-                  '下界: ' + param.data[1]
-              ].join('<br/>');
+        grid: [
+            {x: '7%', y: '16%', width: '38%', height: '32%'},
+            {x2: '7%', y: '16%', width: '38%', height: '32%'},
+            {x: '7%', y2: '7%', width: '38%', height: '32%'},
+            {x2: '7%', y2: '7%', width: '38%', height: '32%'}
+        ],
+        xAxis: [
+          {
+            type: 'category',
+            gridIndex: 0,
+            data: this.boxingData[0].axisData,
+            boundaryGap: true,
+            nameGap: 30,
+            xAxisIndex: 0,
+            yAxisIndex: 0,
+            splitArea: {
+                show: false
+            },
+            splitLine: {
+                show: false
+            },
+            name: this.topFeatures[0],
+            nameLocation: "center"
+          },
+          {
+            type: 'category',
+            gridIndex: 1,
+            data: this.boxingData[1].axisData,
+            boundaryGap: true,
+            nameGap: 30,
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+            splitArea: {
+                show: false
+            },
+            splitLine: {
+                show: false
+            },
+            name: this.topFeatures[1],
+            nameLocation: "center"
+          },
+          {
+            type: 'category',
+            gridIndex: 2,
+            data: this.boxingData[2].axisData,
+            boundaryGap: true,
+            nameGap: 30,
+            xAxisIndex: 2,
+            yAxisIndex: 2,
+            splitArea: {
+                show: false
+            },
+            splitLine: {
+                show: false
+            },
+            name: this.topFeatures[2],
+            nameLocation: "center"
+          },
+          {
+            type: 'category',
+            gridIndex: 3,
+            data: this.boxingData[3].axisData,
+            boundaryGap: true,
+            nameGap: 30,
+            xAxisIndex: 3,
+            yAxisIndex: 3,
+            splitArea: {
+                show: false
+            },
+            splitLine: {
+                show: false
+            },
+            name: this.topFeatures[3],
+            nameLocation: "center"
+          },
+        ],
+        yAxis: [
+          {
+            type: 'value',
+            gridIndex: 0,
+            splitArea: {
+                show: true
+            },
+            name: this.targetCol
+          },
+          {
+            type: 'value',
+            gridIndex: 1,
+            splitArea: {
+                show: true
+            },
+            name: this.targetCol
+          },
+          {
+            type: 'value',
+            gridIndex: 2,
+            splitArea: {
+                show: true
+            },
+            name: this.targetCol
+          },
+          {
+            type: 'value',
+            gridIndex: 3,
+            splitArea: {
+                show: true
+            },
+            name: this.targetCol
+          },
+        ],
+        series: [
+          {
+            name: 'boxplot',
+            type: 'boxplot',
+            xAxisIndex: 0,
+            yAxisIndex: 0,
+            data: this.boxingData[0].boxData,
+            tooltip: {
+              formatter: function (param) {
+                return [
+                    '属性值 ' + param.name + ': ',
+                    '上界: ' + param.data[5],
+                    '3/4分位数: ' + param.data[4],
+                    '中位数: ' + param.data[3],
+                    '1/4分位数: ' + param.data[2],
+                    '下界: ' + param.data[1]
+                ].join('<br/>');
+              }
             }
-          }
-        },
-        {
-          name: 'boxplot',
-          type: 'boxplot',
-          xAxisIndex: 2,
-          yAxisIndex: 2,
-          data: this.boxingData[2].boxData,
-          tooltip: {
-            formatter: function (param) {
-              return [
-                  '取值 ' + param.name + ': ',
-                  '上界: ' + param.data[5],
-                  '3/4分位数: ' + param.data[4],
-                  '中位数: ' + param.data[3],
-                  '1/4分位数: ' + param.data[2],
-                  '下界: ' + param.data[1]
-              ].join('<br/>');
+          },
+          {
+            name: 'boxplot',
+            type: 'boxplot',
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+            data: this.boxingData[1].boxData,
+            tooltip: {
+              formatter: function (param) {
+                return [
+                    '属性值 ' + param.name + ': ',
+                    '上界: ' + param.data[5],
+                    '3/4分位数: ' + param.data[4],
+                    '中位数: ' + param.data[3],
+                    '1/4分位数: ' + param.data[2],
+                    '下界: ' + param.data[1]
+                ].join('<br/>');
+              }
             }
-          }
-        },
-        {
-          name: 'boxplot',
-          type: 'boxplot',
-          xAxisIndex: 3,
-          yAxisIndex: 3,
-          data: this.boxingData[3].boxData,
-          tooltip: {
-            formatter: function (param) {
-              return [
-                  '取值 ' + param.name + ': ',
-                  '上界: ' + param.data[5],
-                  '3/4分位数: ' + param.data[4],
-                  '中位数: ' + param.data[3],
-                  '1/4分位数: ' + param.data[2],
-                  '下界: ' + param.data[1]
-              ].join('<br/>');
+          },
+          {
+            name: 'boxplot',
+            type: 'boxplot',
+            xAxisIndex: 2,
+            yAxisIndex: 2,
+            data: this.boxingData[2].boxData,
+            tooltip: {
+              formatter: function (param) {
+                return [
+                    '属性值 ' + param.name + ': ',
+                    '上界: ' + param.data[5],
+                    '3/4分位数: ' + param.data[4],
+                    '中位数: ' + param.data[3],
+                    '1/4分位数: ' + param.data[2],
+                    '下界: ' + param.data[1]
+                ].join('<br/>');
+              }
             }
-          }
-        },
-        {
-          name: 'outlier',
-          type: 'scatter',
-          xAxisIndex: 0,
-          yAxisIndex: 0,
-          data: this.boxingData[0].outliers
-        },
-        {
-          name: 'outlier',
-          type: 'scatter',
-          xAxisIndex: 1,
-          yAxisIndex: 1,
-          data: this.boxingData[1].outliers
-        },
-        {
-          name: 'outlier',
-          type: 'scatter',
-          xAxisIndex: 2,
-          yAxisIndex: 2,
-          data: this.boxingData[2].outliers
-        },
-        {
-          name: 'outlier',
-          type: 'scatter',
-          xAxisIndex: 3,
-          yAxisIndex: 3,
-          data: this.boxingData[3].outliers
-        },
+          },
+          {
+            name: 'boxplot',
+            type: 'boxplot',
+            xAxisIndex: 3,
+            yAxisIndex: 3,
+            data: this.boxingData[3].boxData,
+            tooltip: {
+              formatter: function (param) {
+                return [
+                    '属性值 ' + param.name + ': ',
+                    '上界: ' + param.data[5],
+                    '3/4分位数: ' + param.data[4],
+                    '中位数: ' + param.data[3],
+                    '1/4分位数: ' + param.data[2],
+                    '下界: ' + param.data[1]
+                ].join('<br/>');
+              }
+            }
+          },
+          {
+            name: 'outlier',
+            type: 'scatter',
+            xAxisIndex: 0,
+            yAxisIndex: 0,
+            data: this.boxingData[0].outliers
+          },
+          {
+            name: 'outlier',
+            type: 'scatter',
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+            data: this.boxingData[1].outliers
+          },
+          {
+            name: 'outlier',
+            type: 'scatter',
+            xAxisIndex: 2,
+            yAxisIndex: 2,
+            data: this.boxingData[2].outliers
+          },
+          {
+            name: 'outlier',
+            type: 'scatter',
+            xAxisIndex: 3,
+            yAxisIndex: 3,
+            data: this.boxingData[3].outliers
+          },
         ]
       }
     },
@@ -413,6 +431,21 @@ export default {
 .chart-place {
   width: 100%;
   height:calc(100vh - 150px);
+}
+
+.question-mark{
+  position: absolute;
+  top: 4px;
+  left: 50px;
+}
+
+.tips {
+  font-size: 20px;
+  color: cornflowerblue;
+}
+
+.helper-box{
+  font-size: 16px;
 }
 
 </style>
