@@ -4,6 +4,13 @@
           mode="horizontal" router>
     <el-row>
       <el-col :span="3">
+        <el-menu-item class="task-item" index="uploadData">
+          <span class="task-text">
+            上传数据集
+          </span>
+        </el-menu-item>
+      </el-col>
+      <el-col :span="3">
         <el-menu-item class="task-item" index="dataOverview">
           <span class="task-text">
             数据总览
@@ -25,11 +32,6 @@
             模型训练
           </span>
         </el-menu-item>
-      </el-col>
-      <el-col :span="3" :offset="12">
-        <el-link class="load-dataset-button" icon="el-icon-plus">
-          <router-link to="/uploadData">上传数据集</router-link>
-        </el-link>
       </el-col>
     </el-row>
   </el-menu>
