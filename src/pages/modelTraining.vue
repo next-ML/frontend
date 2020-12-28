@@ -5,23 +5,15 @@
         <el-card class="box-card" shadow="hover" style="height: 100%;">
           <el-tabs v-model="pageName" @tab-click="changeTrainingPage" style="height: 100%;">
 
-            <el-tab-pane label="训练图表" name="trainingChart" style="height: 100%;">
-              <chart style="width: 100%; height:calc(100vh - 260px);" 
+            <el-tab-pane label="训练图表" name="trainingChart" style="height: 110%;">
+              <chart style="width: 100%; height:calc(100vh - 240px);" 
                     :options="chartOptionsHistoryLine"></chart>
               <el-row class="process-bar">
-                <el-col :span="2">
-                  <span>当前进度</span>
+                <el-col :span="2" :offset="1">
+                  <span>训练进度</span>
                 </el-col>
-                <el-col :span="22">
-                  <el-progress :text-inside="true" :stroke-width="20" :percentage="50" status="exception" class="process-bar"></el-progress>
-                </el-col>
-              </el-row>
-              <el-row class="process-bar">
-                <el-col :span="2">
-                  <span>总进度</span>
-                </el-col>
-                <el-col :span="22">
-                  <el-progress :text-inside="true" :stroke-width="20" :percentage="50" status="exception" class="process-bar"></el-progress>
+                <el-col :span="19">
+                  <el-progress :text-inside="true" :stroke-width="20" :percentage="totalPercentage" :color="chartOptionsHistoryLine.customColors" class="process-bar"></el-progress>
                 </el-col>
               </el-row>
             </el-tab-pane>
@@ -90,7 +82,7 @@
             <el-divider></el-divider>
             <el-form-item label="推荐配置">
               <el-switch v-model="configForm.recommend"></el-switch>
-              <el-button type="primary" style="float:right;" round>开始训练</el-button>
+              <el-button type="primary" style="float:right;" round @click="beginTraining()">开始训练</el-button>
             </el-form-item>
           </el-form>
         </el-card>
@@ -109,6 +101,8 @@ import 'echarts/lib/component/markPoint'
 import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/toolbox'
 
+import axios from 'axios'
+
 import TrainingConfig from "~/components/trainingConfig"
 import ModelList from "~/components/modelList"
 
@@ -122,10 +116,10 @@ export default {
     return {
       pageName: "trainingChart",
       configForm: {
-        taskType: "",
-        target: "",
-        maxTrainingTime: "",
-        maxTrial: "",
+        taskType: "regression",
+        target: "jinpu_ug_ml",
+        maxTrainingTime: "1:00",
+        maxTrial: "20",
         recommend: true,
       },
       chartOptionsHistoryLine: {
@@ -154,22 +148,54 @@ export default {
         xAxis:  {
           type: 'category',
           boundaryGap: false,
-          data: ['1','2','3','4','5','6','7']
+          // data: ['1','2','3','4','5','6','7']
+          data: [],
+          axisLine: {
+            symbol: ["none", "arrow"],
+            symbolOffset:[0, 10],//箭头段移动8个像素
+            symbolSize: [7, 12]//箭头的长宽
+          }
         },
         yAxis: {
           type: 'value',
           axisLabel: {
             formatter: '{value}'
+          },
+          minInterval: 1,
+          max: function(value) {
+            let upperBound = value.max / 0.98;
+            if (upperBound - value.max < 1) {
+              upperBound = value.max + 1;
+            }
+            upperBound = Math.round(upperBound);
+            return upperBound;
+          },
+          min: function (value) {
+            let lowerBound = value.min * 0.97;
+            if (lowerBound - value.min > -1) {
+              lowerBound = value.min - 1;
+            }
+            if (lowerBound < 0) {
+              lowerBound = 0;
+            }
+            lowerBound = Math.floor(lowerBound);
+            return lowerBound;
+          },
+          axisLine: {
+            symbol: ["none", "arrow"],
+            symbolOffset:[0, 10],//箭头段移动8个像素
+            symbolSize: [7, 12]//箭头的长宽
           }
         },
         series: [
           {
             name:'均方误差',
             type:'line',
-            data:[0.1, 0.21, 0.65, 0.43, 0.72, 0.93, 0.89],
+            // data:[0.1, 0.21, 0.65, 0.43, 0.72, 0.93, 0.89],
+            data:[],
             markPoint: {
               data: [
-                {type: 'max', name: '最小大'}
+                {type: 'min', name: '最小值'},
               ]
             },
             markLine: {
@@ -178,21 +204,27 @@ export default {
                   type: 'average', 
                   name: '平均值',
                 },
-              ]
+              ],
             }
           },
-        ]
+        ],
+        customColors: [
+          {color: '#f56c6c', percentage: 20},
+          {color: '#e6a23c', percentage: 40},
+          {color: '#5cb87a', percentage: 60},
+          {color: '#1989fa', percentage: 80},
+          {color: '#6f7ad3', percentage: 100}
+        ],
+        currentPercentage: 60,
+        totalEpoch: 100000000,
+        currentEpoch: 0,
+        timer: null
       },
-      // 进度条
-      percentage: 50,
-      customColor: '#409eff',
-      customColors: [
-        {color: '#f56c6c', percentage: 20},
-        {color: '#e6a23c', percentage: 40},
-        {color: '#5cb87a', percentage: 60},
-        {color: '#1989fa', percentage: 80},
-        {color: '#6f7ad3', percentage: 100}
-      ]
+    }
+  },
+  computed: {
+    totalPercentage() {
+      return Math.round(this.chartOptionsHistoryLine.currentEpoch * 100 / this.chartOptionsHistoryLine.totalEpoch);
     }
   },
   methods: {
@@ -201,6 +233,116 @@ export default {
     },
     format(percentage) {
       return percentage === 100 ? '完成' : `${percentage}%`;
+    },
+    beginTraining() {
+      let data = {
+        userId: this.$store.state.userId, 
+        datasetName: this.$store.state.currentDataset.metadata.name,
+        taskType: this.configForm.taskType,
+        targetCol: this.configForm.target,
+        timeLimit: this.configForm.maxTrainingTime,
+        trialTimesLimit: this.configForm.maxTrial,
+        command: "start_training"
+      };
+      console.log(data);
+
+      this.chartOptionsHistoryLine.xAxis.data = new Array();
+      this.chartOptionsHistoryLine.series[0].data = new Array();
+      this.chartOptionsHistoryLine.currentEpoch = 0;
+      // 30为population size
+      this.chartOptionsHistoryLine.totalEpoch = (parseInt(data.trialTimesLimit)+1) * 30;
+      this.chartOptionsHistoryLine.isFinished = false;
+
+      this.uploadConfigAndStartTraining(data);
+    },
+    beginTrainingInterface({taskName, userId, command}) {
+      let data = {
+        "user_id": userId,
+        "command": command
+      };
+      axios
+        .post(["api", "task", taskName].join("/"), data)
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          console.log(error);
+        })
+    },
+    uploadConfigAndStartTraining({userId, datasetName, taskType, targetCol, timeLimit, trialTimesLimit, command}) {
+      var data = {
+        "user_id": userId,
+        "dataset_name": datasetName,
+        "task_type": taskType,
+        "target_col": targetCol,
+        "time_limit": timeLimit,
+        "trial_times_limit": trialTimesLimit
+      };
+      let that = this;
+      axios
+        .put(["api", "task"].join("/"), data)
+        .then(response => {
+          let taskId = response.data.task_id;
+          console.log(taskId);
+          // 启动训练
+          that.beginTrainingInterface({
+            taskName: taskId, 
+            userId: userId, 
+            command: command});
+
+          // 实时监控训练信息
+          this.chartOptionsHistoryLine.timer = setInterval(()=>{
+            that.getTrainingProcessInformation({taskId: taskId});
+          }, 500);
+        })
+        .catch(error => {
+          console.log(error);
+        })
+    },
+    getTrainingProcessInformation({taskId}) {
+      let that = this;
+      axios
+        .get(["api", "task", taskId].join("/"))
+        .then(response => {
+          // 解析返回信息
+          let info = response.data.message;
+          for (let item of info) {
+
+            // 迭代轮数更新信号
+            let iterationUpdateRe = RegExp('pbar:(\\d+)');
+            let matchArry = item.match(iterationUpdateRe);
+            if (matchArry !== null && matchArry.length == 2) {
+              let updateValue = parseInt(matchArry[1]);
+              that.chartOptionsHistoryLine.currentEpoch += updateValue;
+              continue;
+            }
+
+            // 结束信号
+            if (item === 'finish') {
+              console.log("Training finished!");
+              clearInterval(this.chartOptionsHistoryLine.timer);
+              continue;
+            }
+
+            // 得到交叉验证分数信号
+            let cvScoreRe = new RegExp('Generation (\\d+) - Current best internal CV score: ([\\-\\d\\.]+)');
+            matchArry = item.match(cvScoreRe);
+            if (matchArry !== null && matchArry.length == 3) {
+              let epoch = parseInt(matchArry[1]);
+              let cvScore = parseFloat(matchArry[2]).toFixed(2);
+              if (cvScore < 0) {
+                cvScore = -cvScore;
+              }
+              that.chartOptionsHistoryLine.xAxis.data.push(epoch);
+              that.chartOptionsHistoryLine.series[0].data.push(cvScore);
+              continue;
+            }
+
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        })
     }
   }
 }

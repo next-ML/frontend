@@ -33,8 +33,8 @@ export default {
 	},
 	methods: {
 		onUploadComplete() {
-      alert("上传完成");
-      this.$store.dispatch('initDatasetInfo')
+			alert("上传完成");
+			this.$store.dispatch('initDatasetInfo')
 		},
 		apiTarget(file) {
 			return ["api", "guest", "dataset", file.name]

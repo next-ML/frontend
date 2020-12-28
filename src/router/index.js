@@ -10,6 +10,7 @@ const dataVisualization = r => require.ensure([], () => r(require('~/pages/dataV
 const dataPreprocessing = r => require.ensure([], () => r(require('~/pages/dataPreprocessing')), 'dataPreprocessing');
 const modelTraining = r => require.ensure([], () => r(require('~/pages/modelTraining')), 'modelTraining');
 const modelEvaluation = r => require.ensure([], () => r(require('~/pages/modelEvaluation')), 'modelEvaluation');
+const materialExplore = r => require.ensure([], () => r(require('~/pages/materialExplore')), 'materialExplore');
 
 const routes = [
 	{
@@ -34,6 +35,9 @@ const routes = [
 		},{
 			path: 'uploadData',
 			component: uploadData
+		},{
+			path: 'materialExplore',
+			component: materialExplore
 		}]
 	},
 	{

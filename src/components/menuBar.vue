@@ -33,6 +33,13 @@
           </span>
         </el-menu-item>
       </el-col>
+      <el-col :span="3">
+        <el-menu-item class="task-item" index="materialExplore">
+          <span class="task-text">
+            材料发现
+          </span>
+        </el-menu-item>
+      </el-col>
     </el-row>
   </el-menu>
   <div style="height: calc(100vh - 92px); padding: 5px 15px; box-sizing: border-box;">
